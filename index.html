@@ -1,675 +1,568 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ghana Import Calculator - Landed Cost, Duties & Profit</title>
-  <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#006b3f">
-  <style>
-    :root {
-      --primary: #006b3f;
-      --primary-dark: #004d2d;
-      --accent: #ce1126;
-      --gold: #fcd116;
-      --bg: #f4f6f8;
-      --card-bg: #ffffff;
-      --text: #1a1a1a;
-      --border: #e2e8f0;
-      --muted: #64748b;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghana Import Calculator</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #006B3F;
+            --primary-dark: #004D2D;
+            --accent: #FCD116;
+            --danger: #CE1126;
+            --bg: #F4F6F8;
+            --card-bg: #FFFFFF;
+            --text: #1F2937;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      padding: 16px 12px 32px 12px;
-      display: flex;
-      justify-content: center;
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-    .container {
-      width: 100%;
-      max-width: 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .header {
-      text-align: center;
-      padding: 8px 0 4px 0;
-    }
+        header h1 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-    .header h1 {
-      font-size: 24px;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
+        header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
 
-    .header p {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
 
-    .flag-bar {
-      height: 4px;
-      width: 100%;
-      background: linear-gradient(90deg, #ce1126 33.3%, #fcd116 33.3%, #fcd116 66.6%, #006b3f 66.6%);
-      border-radius: 2px;
-    }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-      border: 1px solid var(--border);
-    }
+        .card-header span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      color: var(--text);
-    }
+        .reset-btn {
+            font-size: 0.75rem;
+            color: var(--danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
 
-    .reset-btn {
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-    }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
 
-    .input-group:last-child {
-      margin-bottom: 0;
-    }
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            background-color: #FAFAFA;
+        }
 
-    .input-group label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #444;
-    }
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background-color: #FFF;
+        }
 
-    .input-field, select.input-field {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-      background: #fff;
-    }
+        .advisor-box {
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #1E40AF;
+            margin-top: 8px;
+        }
 
-    .input-field:focus, select.input-field:focus {
-      border-color: var(--primary);
-    }
+        .results-container {
+            background-color: #0F172A;
+            color: #F8FAFC;
+            border-radius: 12px;
+            padding: 16px;
+        }
 
-    /* Smart Advisor Box */
-    .advisor-box {
-      background-color: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 12.5px;
-      color: #1e40af;
-      margin-top: 8px;
-    }
+        .results-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #1E293B;
+        }
 
-    .advisor-title {
-      font-weight: 700;
-      margin-bottom: 2px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+        .results-row.total {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--accent);
+            border-bottom: none;
+            padding-top: 10px;
+        }
 
-    /* Results Summary Card Styling */
-    .results-card {
-      background: #003820;
-      color: #ffffff;
-      border-radius: 16px;
-      padding: 20px 16px;
-      box-shadow: 0 6px 16px rgba(0, 107, 63, 0.2);
-    }
+        .highlight-box {
+            background-color: #1E293B;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            text-align: center;
+        }
 
-    .results-card .card-title {
-      color: #ffffff;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
-      padding-bottom: 10px;
-    }
+        .highlight-box .title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94A3B8;
+        }
 
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      font-size: 13.5px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
+        .highlight-box .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #22C55E;
+            margin-top: 2px;
+        }
 
-    .result-row:last-child {
-      border-bottom: none;
-    }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
 
-    .result-label {
-      color: #cbd5e1;
-    }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
 
-    .result-val {
-      font-weight: 600;
-      font-size: 14.5px;
-    }
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: #FFFFFF;
+        }
 
-    .highlight-row {
-      background: rgba(252, 209, 22, 0.12);
-      margin: 8px -16px;
-      padding: 12px 16px;
-      border-left: 4px solid var(--gold);
-    }
+        .btn-whatsapp:hover {
+            background-color: #1DA851;
+        }
 
-    .highlight-row .result-label {
-      color: #fef08a;
-      font-weight: 700;
-    }
+        .btn-sms {
+            background-color: #3B82F6;
+            color: #FFFFFF;
+        }
 
-    .highlight-row .result-val {
-      color: #ffffff;
-      font-size: 18px;
-      font-weight: 800;
-    }
+        .btn-sms:hover {
+            background-color: #2563EB;
+        }
 
-    .profit-positive {
-      color: #4ade80 !important;
-    }
-
-    .profit-negative {
-      color: #f87171 !important;
-    }
-
-    /* WhatsApp Lead Button */
-    .wa-book-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      background-color: #25d366;
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 700;
-      text-decoration: none;
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 16px;
-      box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-      transition: background-color 0.2s;
-    }
-
-    .wa-book-btn:hover {
-      background-color: #1ebd57;
-    }
-
-    /* Dynamic Advertisement Block */
-    .ad-container {
-      background: #fffdf0;
-      border: 1px solid #fce788;
-      border-radius: 12px;
-      padding: 12px 16px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .ad-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: #888;
-      letter-spacing: 0.5px;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .ad-body {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .ad-content h3 {
-      font-size: 14px;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
-
-    .ad-content p {
-      font-size: 12px;
-      color: #555;
-    }
-
-    .ad-button {
-      background-color: #d97706;
-      color: #fff;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 8px;
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
-
-    .ad-button:hover {
-      background-color: #b45309;
-    }
-  </style>
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- Header -->
-  <div class="header">
-    <h1>📦 Ghana Import Calculator</h1>
-    <p>Calculate landed cost, duties, margins & profit for 1688, Alibaba & Taobao</p>
-  </div>
+    <header>
+        <h1>📦 Ghana Import Calculator</h1>
+        <p>Calculate landed cost, duties, margins & profit for 1688, Alibaba & Taobao</p>
+    </header>
 
-  <div class="flag-bar"></div>
-
-  <!-- 1. Exchange Rates Card -->
-  <div class="card">
-    <div class="card-title">
-      <span>💹 Exchange Rates</span>
-      <button class="reset-btn" onclick="resetRates()">Reset Rates</button>
-    </div>
-    <div class="grid-2">
-      <div class="input-group">
-        <label>1 USD ($) to GHS (GH₵)</label>
-        <input type="number" id="usd-rate" class="input-field" value="15.50" step="0.01" oninput="calculateLandedCost()" />
-      </div>
-      <div class="input-group">
-        <label>1 CNY (¥) to GHS (GH₵)</label>
-        <input type="number" id="cny-rate" class="input-field" value="2.15" step="0.01" oninput="calculateLandedCost()" />
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. Product Details Card -->
-  <div class="card">
-    <div class="card-title">
-      <span>📦 Product Details</span>
-      <button class="reset-btn" style="color: var(--accent);" onclick="clearForm()">Clear</button>
+    <!-- Exchange Rates Card -->
+    <div class="card">
+        <div class="card-header">
+            <span>📈 Exchange Rates</span>
+            <button class="reset-btn" onclick="resetRates()">Reset Rates</button>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="usdRate">1 USD ($) to GHS</label>
+                <input type="number" id="usdRate" value="15.50" step="0.01" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="cnyRate">1 CNY (¥) to GHS</label>
+                <input type="number" id="cnyRate" value="2.15" step="0.01" oninput="calculate()">
+            </div>
+        </div>
     </div>
 
-    <div class="input-group">
-      <label>Product Name / Description</label>
-      <input type="text" id="prod-name" class="input-field" placeholder="e.g. Night wear" oninput="calculateLandedCost()" />
+    <!-- Product Details Card -->
+    <div class="card">
+        <div class="card-header">
+            <span>📦 Product Details</span>
+            <button class="reset-btn" onclick="clearProductDetails()">Clear</button>
+        </div>
+        <div class="form-group">
+            <label for="productName">Product Name / Description</label>
+            <input type="text" id="productName" placeholder="e.g. Power bank">
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="totalQuantity">Total Quantity (Units) *</label>
+                <input type="number" id="totalQuantity" value="200" min="1" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="currency">Currency</label>
+                <select id="currency" onchange="calculate()">
+                    <option value="CNY">¥ CNY</option>
+                    <option value="USD">$ USD</option>
+                    <option value="GHS">GHS GHS</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="costPrice">Cost Price per Unit *</label>
+            <input type="number" id="costPrice" value="20" step="0.01" oninput="calculate()">
+        </div>
     </div>
 
-    <div class="grid-2">
-      <div class="input-group">
-        <label>Total Quantity (Units) *</label>
-        <input type="number" id="prod-qty" class="input-field" value="20" oninput="calculateLandedCost()" />
-      </div>
-
-      <div class="input-group">
-        <label>Currency</label>
-        <select id="cost-currency" class="input-field" onchange="calculateLandedCost()">
-          <option value="CNY" selected>¥ CNY</option>
-          <option value="USD">$ USD</option>
-          <option value="GHS">GH₵ GHS</option>
-        </select>
-      </div>
+    <!-- Shipping & Logistics Card -->
+    <div class="card">
+        <div class="card-header">
+            <span>🚢 Shipping & Logistics</span>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="shippingMethod">Shipping Method</label>
+                <select id="shippingMethod" onchange="toggleShippingFields(); calculate();">
+                    <option value="SEA">Sea Freight (per CBM)</option>
+                    <option value="AIR">Air Freight (per Kg)</option>
+                    <option value="FLAT">Flat Fee (Total)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label id="metricLabel" for="shippingMetric">Total Volume (CBM)</label>
+                <input type="number" id="shippingMetric" value="2.5" step="0.01" oninput="calculate()">
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label id="rateLabel" for="shippingRate">Shipping Rate ($/CBM)</label>
+                <input type="number" id="shippingRate" value="200" step="0.01" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="localClearing">Local Clearing (GHS)</label>
+                <input type="number" id="localClearing" value="50" step="0.01" oninput="calculate()">
+            </div>
+        </div>
+        <div class="advisor-box" id="shippingAdvisor">
+            💡 <strong>Shipping Advisor:</strong> Sea Freight Recommended. Best for bulky, heavy shipments to maximize profit margins.
+        </div>
     </div>
 
-    <div class="input-group">
-      <label>Cost Price per Unit *</label>
-      <input type="number" id="prod-cost" class="input-field" value="20" step="0.01" oninput="calculateLandedCost()" />
-    </div>
-  </div>
-
-  <!-- 3. Shipping & Logistics Card -->
-  <div class="card">
-    <div class="card-title">
-      <span>🚢 Shipping & Logistics</span>
-    </div>
-
-    <div class="grid-2">
-      <div class="input-group">
-        <label>Shipping Method</label>
-        <select id="ship-method" class="input-field" onchange="calculateLandedCost()">
-          <option value="AIR">Air Freight (per Kg)</option>
-          <option value="SEA">Sea Freight (per CBM)</option>
-          <option value="FLAT">Flat Fee (Total)</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label id="ship-qty-label">Total Weight (Kg)</label>
-        <input type="number" id="ship-qty" class="input-field" value="2.5" step="0.1" oninput="calculateLandedCost()" />
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="input-group">
-        <label id="ship-rate-label">Shipping Rate ($/Kg)</label>
-        <input type="number" id="ship-rate" class="input-field" value="12" step="0.1" oninput="calculateLandedCost()" />
-      </div>
-      <div class="input-group">
-        <label>Local Clearing (GH₵)</label>
-        <input type="number" id="clearing-fee" class="input-field" value="50" step="1" oninput="calculateLandedCost()" />
-      </div>
+    <!-- Customs Duty & Port Taxes Card -->
+    <div class="card">
+        <div class="card-header">
+            <span>🇬🇭 Customs Duty & Port Taxes (Est.)</span>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="dutyCategory">Duty Category (Est. Rate)</label>
+                <select id="dutyCategory" onchange="calculate()">
+                    <option value="0.20">20% - Standard General</option>
+                    <option value="0.05">5% - Reduced / Raw Materials</option>
+                    <option value="0.10">10% - Intermediate Goods</option>
+                    <option value="0.35">35% - High Duty / Luxury</option>
+                    <option value="0.00">0% - Exempt Goods</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="includeLevies">Include Port Levies & VAT</label>
+                <select id="includeLevies" onchange="calculate()">
+                    <option value="1.15">Yes (Standard ~15%)</option>
+                    <option value="1.00">No (Basic Duty Only)</option>
+                </select>
+            </div>
+        </div>
     </div>
 
-    <!-- Smart Freight Advisor Widget -->
-    <div class="advisor-box" id="freight-advisor">
-      <div class="advisor-title">💡 Shipping Advisor</div>
-      <span id="advisor-text">Calculating optimal shipping mode...</span>
-    </div>
-  </div>
-
-  <!-- 4. Customs Duty & Taxes Card -->
-  <div class="card">
-    <div class="card-title">
-      <span>🇬🇭 Customs Duty & Port Taxes (Est.)</span>
-    </div>
-
-    <div class="grid-2">
-      <div class="input-group">
-        <label>Duty Category (Est. Rate)</label>
-        <select id="duty-category" class="input-field" onchange="calculateLandedCost()">
-          <option value="0">0% - Exempt / Door-to-Door Door Cargo</option>
-          <option value="0.05">5% - Raw Materials / Basic Goods</option>
-          <option value="0.10">10% - Intermediate / Capital Goods</option>
-          <option value="0.20" selected>20% - Standard Finished Consumer Goods</option>
-          <option value="0.35">35% - Luxury Goods / High Tariff</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label>Include Port Levies & VAT</label>
-        <select id="include-vat" class="input-field" onchange="calculateLandedCost()">
-          <option value="YES" selected>Yes (Standard ~15% Extras)</option>
-          <option value="NO">No (Duty Only)</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <!-- 5. Pricing & Margin Target Card -->
-  <div class="card">
-    <div class="card-title">
-      <span>💰 Selling Price & Margin</span>
+    <!-- Selling Price & Margin Card -->
+    <div class="card">
+        <div class="card-header">
+            <span>💰 Selling Price & Margin</span>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="targetPrice">Target Selling Price (GHS)</label>
+                <input type="number" id="targetPrice" value="300" step="0.01" oninput="calculate()">
+            </div>
+            <div class="form-group">
+                <label for="localDelivery">Local Delivery / Pkg (GHS)</label>
+                <input type="number" id="localDelivery" value="5" step="0.01" oninput="calculate()">
+            </div>
+        </div>
     </div>
 
-    <div class="grid-2">
-      <div class="input-group">
-        <label>Target Selling Price (GH₵)</label>
-        <input type="number" id="target-price" class="input-field" value="65" step="1" oninput="calculateLandedCost()" />
-      </div>
-      <div class="input-group">
-        <label>Local Delivery / Packaging (GH₵)</label>
-        <input type="number" id="local-extra" class="input-field" value="5" step="1" oninput="calculateLandedCost()" />
-      </div>
-    </div>
-  </div>
+    <!-- Results Breakdown Card -->
+    <div class="results-container">
+        <div class="card-header" style="color: #FFF; margin-bottom: 8px;">
+            <span>📊 Landed Cost & Profit Breakdown</span>
+        </div>
 
-  <!-- 6. Live Results Breakdown Card -->
-  <div class="results-card">
-    <div class="card-title">
-      <span>📊 Landed Cost & Profit Breakdown</span>
-    </div>
+        <div class="results-row">
+            <span>Supplier Total:</span>
+            <span id="resSupplierTotal">GHS 0.00</span>
+        </div>
+        <div class="results-row">
+            <span>Shipping & Freight Total:</span>
+            <span id="resFreightTotal">GHS 0.00</span>
+        </div>
+        <div class="results-row">
+            <span>Est. Customs Duty & Taxes:</span>
+            <span id="resDutiesTotal">GHS 0.00</span>
+        </div>
+        <div class="results-row">
+            <span>Local Clearing & Extras:</span>
+            <span id="resClearingTotal">GHS 0.00</span>
+        </div>
+        <div class="results-row total">
+            <span>Total Batch Landed Cost:</span>
+            <span id="resBatchLandedCost">GHS 0.00</span>
+        </div>
 
-    <div class="result-row">
-      <span class="result-label">Supplier Total:</span>
-      <span class="result-val" id="res-supplier-total">GH₵ 0.00</span>
-    </div>
+        <div class="highlight-box">
+            <div class="title">Landed Cost / Unit</div>
+            <div class="value" id="resLandedCostUnit">GHS 0.00</div>
+        </div>
 
-    <div class="result-row">
-      <span class="result-label">Shipping & Freight Total:</span>
-      <span class="result-val" id="res-shipping-total">GH₵ 0.00</span>
-    </div>
+        <div class="results-row">
+            <span>Estimated Revenue:</span>
+            <span id="resRevenue">GHS 0.00</span>
+        </div>
+        <div class="results-row">
+            <span>Net Profit / Unit:</span>
+            <span id="resProfitUnit">GHS 0.00</span>
+        </div>
+        <div class="results-row">
+            <span>Total Batch Profit:</span>
+            <span id="resTotalProfit">GHS 0.00</span>
+        </div>
+        <div class="results-row total">
+            <span>Profit Margin:</span>
+            <span id="resProfitMargin">0.0%</span>
+        </div>
 
-    <div class="result-row">
-      <span class="result-label">Est. Customs Duty & Taxes:</span>
-      <span class="result-val" id="res-duties-total">GH₵ 0.00</span>
-    </div>
-
-    <div class="result-row">
-      <span class="result-label">Local Clearing & Extras:</span>
-      <span class="result-val" id="res-clearing-total">GH₵ 0.00</span>
-    </div>
-
-    <div class="result-row">
-      <span class="result-label">Total Batch Landed Cost:</span>
-      <span class="result-val" id="res-total-landed">GH₵ 0.00</span>
-    </div>
-
-    <div class="result-row highlight-row">
-      <span class="result-label">Landed Cost / Unit:</span>
-      <span class="result-val" id="res-unit-landed">GH₵ 0.00</span>
-    </div>
-
-    <div class="result-row">
-      <span class="result-label">Estimated Revenue:</span>
-      <span class="result-val" id="res-total-revenue">GH₵ 0.00</span>
-    </div>
-
-    <div class="result-row">
-      <span class="result-label">Net Profit / Unit:</span>
-      <span class="result-val" id="res-unit-profit">GH₵ 0.00</span>
-    </div>
-
-    <div class="result-row">
-      <span class="result-label">Total Batch Profit:</span>
-      <span class="result-val" id="res-total-profit">GH₵ 0.00</span>
+        <!-- Sharing Actions -->
+        <div class="action-buttons">
+            <button class="btn btn-whatsapp" onclick="shareToWhatsApp()">
+                💬 Send Calculation to Agent on WhatsApp
+            </button>
+            <button class="btn btn-sms" onclick="shareViaSMS()">
+                📱 Send Calculation via SMS / Text
+            </button>
+        </div>
     </div>
 
-    <div class="result-row">
-      <span class="result-label">Profit Margin:</span>
-      <span class="result-val" id="res-profit-margin">0%</span>
-    </div>
+    <script>
+        function toggleShippingFields() {
+            const method = document.getElementById('shippingMethod').value;
+            const metricLabel = document.getElementById('metricLabel');
+            const rateLabel = document.getElementById('rateLabel');
+            const metricInput = document.getElementById('shippingMetric');
+            const advisor = document.getElementById('shippingAdvisor');
 
-    <!-- WhatsApp Booking Button -->
-    <a id="wa-send-btn" href="#" target="_blank" rel="noopener noreferrer" class="wa-book-btn">
-      💬 Send Calculation to Agent on WhatsApp
-    </a>
-  </div>
+            if (method === 'SEA') {
+                metricLabel.innerText = "Total Volume (CBM)";
+                rateLabel.innerText = "Shipping Rate ($/CBM)";
+                metricInput.disabled = false;
+                advisor.innerHTML = "💡 <strong>Shipping Advisor:</strong> Sea Freight Recommended. Best for bulky, heavy shipments to maximize profit margins.";
+            } else if (method === 'AIR') {
+                metricLabel.innerText = "Total Weight (Kg)";
+                rateLabel.innerText = "Shipping Rate ($/Kg)";
+                metricInput.disabled = false;
+                advisor.innerHTML = "✈️ <strong>Shipping Advisor:</strong> Air Freight Recommended. Ideal for small, high-value, or fast-turnover products.";
+            } else {
+                metricLabel.innerText = "N/A (Flat Fee)";
+                rateLabel.innerText = "Total Shipping Fee ($)";
+                metricInput.disabled = true;
+                advisor.innerHTML = "📦 <strong>Shipping Advisor:</strong> Flat fee applied directly to total order.";
+            }
+        }
 
-  <!-- 7. Dynamic Advertisement Block -->
-  <div class="ad-container" id="ad-container" style="display: none;">
-    <span class="ad-label">ADVERTISEMENT</span>
-    <div class="ad-body">
-      <div class="ad-content">
-        <h3 id="ad-title"></h3>
-        <p id="ad-desc"></p>
-      </div>
-      <a id="ad-link" href="#" target="_blank" rel="noopener noreferrer" class="ad-button">Learn More</a>
-    </div>
-  </div>
-</div>
+        function calculate() {
+            const usdRate = parseFloat(document.getElementById('usdRate').value) || 0;
+            const cnyRate = parseFloat(document.getElementById('cnyRate').value) || 0;
 
-<script>
-  // Fetch ad settings dynamically from ad.json
-  fetch('./ad.json?t=' + Date.now())
-    .then(response => {
-      if (!response.ok) throw new Error('No ad config found');
-      return response.json();
-    })
-    .then(ad => {
-      if (ad && ad.active) {
-        document.getElementById('ad-title').textContent = ad.title;
-        document.getElementById('ad-desc').textContent = ad.description;
-        
-        const adLink = document.getElementById('ad-link');
-        adLink.textContent = ad.buttonText || 'Learn More';
-        adLink.href = ad.link;
-        
-        document.getElementById('ad-container').style.display = 'block';
-      }
-    })
-    .catch(err => console.log('Ad fetch status:', err));
+            const productName = document.getElementById('productName').value || 'Import Items';
+            const qty = parseFloat(document.getElementById('totalQuantity').value) || 0;
+            const currency = document.getElementById('currency').value;
+            const unitCost = parseFloat(document.getElementById('costPrice').value) || 0;
 
-  function resetRates() {
-    document.getElementById('usd-rate').value = '15.50';
-    document.getElementById('cny-rate').value = '2.15';
-    calculateLandedCost();
-  }
+            const shippingMethod = document.getElementById('shippingMethod').value;
+            const shippingMetric = parseFloat(document.getElementById('shippingMetric').value) || 0;
+            const shippingRateUSD = parseFloat(document.getElementById('shippingRate').value) || 0;
+            const localClearingGHS = parseFloat(document.getElementById('localClearing').value) || 0;
 
-  function clearForm() {
-    document.getElementById('prod-name').value = '';
-    document.getElementById('prod-qty').value = '';
-    document.getElementById('prod-cost').value = '';
-    document.getElementById('target-price').value = '';
-    calculateLandedCost();
-  }
+            const dutyRate = parseFloat(document.getElementById('dutyCategory').value) || 0;
+            const leviesMultiplier = parseFloat(document.getElementById('includeLevies').value) || 1.0;
 
-  function calculateLandedCost() {
-    const usdRate = parseFloat(document.getElementById('usd-rate').value) || 0;
-    const cnyRate = parseFloat(document.getElementById('cny-rate').value) || 0;
+            const targetPriceGHS = parseFloat(document.getElementById('targetPrice').value) || 0;
+            const localDeliveryGHS = parseFloat(document.getElementById('localDelivery').value) || 0;
 
-    const prodName = document.getElementById('prod-name').value || 'Unspecified Product';
-    const qty = parseFloat(document.getElementById('prod-qty').value) || 0;
-    const unitCost = parseFloat(document.getElementById('prod-cost').value) || 0;
-    const currency = document.getElementById('cost-currency').value;
+            // 1. Supplier Cost Calculation
+            let unitCostGHS = unitCost;
+            if (currency === 'CNY') unitCostGHS = unitCost * cnyRate;
+            else if (currency === 'USD') unitCostGHS = unitCost * usdRate;
 
-    const shipMethod = document.getElementById('ship-method').value;
-    const shipQtyInput = document.getElementById('ship-qty');
-    const shipQtyLabel = document.getElementById('ship-qty-label');
-    const shipRateLabel = document.getElementById('ship-rate-label');
-    const shipRate = parseFloat(document.getElementById('ship-rate').value) || 0;
-    const clearingFee = parseFloat(document.getElementById('clearing-fee').value) || 0;
+            const supplierTotalGHS = unitCostGHS * qty;
 
-    const dutyCategoryRate = parseFloat(document.getElementById('duty-category').value) || 0;
-    const includeVat = document.getElementById('include-vat').value;
+            // 2. Shipping Cost Calculation
+            let totalFreightUSD = 0;
+            if (shippingMethod === 'SEA' || shippingMethod === 'AIR') {
+                totalFreightUSD = shippingMetric * shippingRateUSD;
+            } else {
+                totalFreightUSD = shippingRateUSD;
+            }
+            const freightTotalGHS = totalFreightUSD * usdRate;
 
-    const targetPrice = parseFloat(document.getElementById('target-price').value) || 0;
-    const localExtra = parseFloat(document.getElementById('local-extra').value) || 0;
+            // 3. Duties Calculation
+            const cifGHS = supplierTotalGHS + freightTotalGHS;
+            const dutiesTotalGHS = cifGHS * dutyRate * leviesMultiplier;
 
-    if (shipMethod === 'AIR') {
-      shipQtyLabel.textContent = 'Total Weight (Kg)';
-      shipRateLabel.textContent = 'Shipping Rate ($/Kg)';
-    } else if (shipMethod === 'SEA') {
-      shipQtyLabel.textContent = 'Total Volume (CBM)';
-      shipRateLabel.textContent = 'Shipping Rate ($/CBM)';
-    } else {
-      shipQtyLabel.textContent = 'Flat Fee Cargo';
-      shipRateLabel.textContent = 'Total Freight ($)';
-    }
+            // 4. Total Batch Landed Cost
+            const batchLandedCostGHS = supplierTotalGHS + freightTotalGHS + dutiesTotalGHS + localClearingGHS;
+            const landedCostPerUnitGHS = qty > 0 ? (batchLandedCostGHS / qty) : 0;
 
-    const shipQty = parseFloat(shipQtyInput.value) || 0;
+            // 5. Profit & Margin Calculations
+            const revenueGHS = targetPriceGHS * qty;
+            const netProfitUnitGHS = targetPriceGHS - landedCostPerUnitGHS - localDeliveryGHS;
+            const totalBatchProfitGHS = netProfitUnitGHS * qty;
+            const profitMargin = revenueGHS > 0 ? ((totalBatchProfitGHS / revenueGHS) * 100) : 0;
 
-    let costInGhsPerUnit = unitCost;
-    if (currency === 'CNY') {
-      costInGhsPerUnit = unitCost * cnyRate;
-    } else if (currency === 'USD') {
-      costInGhsPerUnit = unitCost * usdRate;
-    }
+            // Update UI Displays
+            document.getElementById('resSupplierTotal').innerText = `GHS ${supplierTotalGHS.toFixed(2)}`;
+            document.getElementById('resFreightTotal').innerText = `GHS ${freightTotalGHS.toFixed(2)} ($${totalFreightUSD.toFixed(2)})`;
+            document.getElementById('resDutiesTotal').innerText = `GHS ${dutiesTotalGHS.toFixed(2)}`;
+            document.getElementById('resClearingTotal').innerText = `GHS ${localClearingGHS.toFixed(2)}`;
+            document.getElementById('resBatchLandedCost').innerText = `GHS ${batchLandedCostGHS.toFixed(2)}`;
+            document.getElementById('resLandedCostUnit').innerText = `GHS ${landedCostPerUnitGHS.toFixed(2)}`;
 
-    const totalSupplierGhs = costInGhsPerUnit * qty;
+            document.getElementById('resRevenue').innerText = `GHS ${revenueGHS.toFixed(2)}`;
+            document.getElementById('resProfitUnit').innerText = `GHS ${netProfitUnitGHS.toFixed(2)}`;
+            document.getElementById('resTotalProfit').innerText = `GHS ${totalBatchProfitGHS.toFixed(2)}`;
+            
+            const marginEl = document.getElementById('resProfitMargin');
+            marginEl.innerText = `${profitMargin.toFixed(1)}%`;
+            if (profitMargin < 0) {
+                marginEl.style.color = '#EF4444';
+            } else {
+                marginEl.style.color = '#22C55E';
+            }
+        }
 
-    let totalShippingUsd = 0;
-    if (shipMethod === 'FLAT') {
-      totalShippingUsd = shipRate;
-    } else {
-      totalShippingUsd = shipQty * shipRate;
-    }
-    const totalShippingGhs = totalShippingUsd * usdRate;
+        function buildShareMessage() {
+            const appName = "Ghana Import App"; // Update to your domain later e.g., "importcalc.com.gh"
+            const item = document.getElementById('productName').value || 'Import Items';
+            const qty = document.getElementById('totalQuantity').value || '0';
+            const methodSelect = document.getElementById('shippingMethod');
+            const methodText = methodSelect.options[methodSelect.selectedIndex].text.split(' ')[0];
+            const metric = document.getElementById('shippingMetric').value || '0';
 
-    // Customs Duty Calculation (CIF Basis = Supplier + Freight)
-    const cifGhs = totalSupplierGhs + totalShippingGhs;
-    const baseDutyGhs = cifGhs * dutyCategoryRate;
-    const vatAndLeviesGhs = includeVat === 'YES' ? (cifGhs + baseDutyGhs) * 0.15 : 0;
-    const totalDutiesGhs = baseDutyGhs + vatAndLeviesGhs;
+            const duties = document.getElementById('resDutiesTotal').innerText;
+            const landedCostUnit = document.getElementById('resLandedCostUnit').innerText;
 
-    const totalClearingGhs = clearingFee + (localExtra * qty);
+            return `Hello! I calculated an import order on *${appName}* and would like to proceed.\n\n` +
+                   `📦 *Item:* ${item}\n` +
+                   `📊 *Quantity:* ${qty} units\n` +
+                   `🚢 *Method:* ${methodText} (${metric} CBM/Kg)\n` +
+                   `💰 *Est. Duties/Taxes:* ${duties}\n` +
+                   `🏷️ *Est. Landed Cost:* ${landedCostUnit}/unit\n\n` +
+                   `Please assist me with procurement shipping!`;
+        }
 
-    const totalLandedGhs = totalSupplierGhs + totalShippingGhs + totalDutiesGhs + totalClearingGhs;
-    const unitLandedGhs = qty > 0 ? (totalLandedGhs / qty) : 0;
+        function shareToWhatsApp() {
+            const text = buildShareMessage();
+            const encodedText = encodeURIComponent(text);
+            // No phone parameter included -> prompts WhatsApp to select contact
+            const url = `https://api.whatsapp.com/send?text=${encodedText}`;
+            window.open(url, '_blank');
+        }
 
-    const totalRevenueGhs = targetPrice * qty;
-    const totalProfitGhs = totalRevenueGhs - totalLandedGhs;
-    const unitProfitGhs = qty > 0 ? (totalProfitGhs / qty) : 0;
-    const marginPct = totalRevenueGhs > 0 ? ((totalProfitGhs / totalRevenueGhs) * 100) : 0;
+        function shareViaSMS() {
+            const text = buildShareMessage();
+            const encodedText = encodeURIComponent(text);
+            // standard sms scheme without target number -> opens SMS app contact picker
+            const url = `sms:?body=${encodedText}`;
+            window.location.href = url;
+        }
 
-    // Smart Freight Advisor Logic
-    const advisorText = document.getElementById('advisor-text');
-    if (shipMethod === 'AIR' && shipQty >= 25) {
-      advisorText.innerHTML = `⚠️ <b>Heavy Cargo Alert:</b> At ${shipQty} Kg, consider switching to <b>Sea Freight</b> to cut shipping costs by up to 60%.`;
-    } else if (shipMethod === 'SEA' && shipQty < 0.3) {
-      advisorText.innerHTML = `⚡ <b>Small Parcel Alert:</b> For small volumes below 0.3 CBM, <b>Air Freight</b> is usually faster and more cost-effective.`;
-    } else if (shipMethod === 'AIR') {
-      advisorText.innerHTML = `✈️ <b>Air Freight Recommended:</b> Ideal for small, high-value, or fast-turnover products.`;
-    } else {
-      advisorText.innerHTML = `🚢 <b>Sea Freight Recommended:</b> Best for bulky, heavy shipments to maximize profit margins.`;
-    }
+        function resetRates() {
+            document.getElementById('usdRate').value = '15.50';
+            document.getElementById('cnyRate').value = '2.15';
+            calculate();
+        }
 
-    document.getElementById('res-supplier-total').textContent = `GH₵ ${totalSupplierGhs.toFixed(2)}`;
-    document.getElementById('res-shipping-total').textContent = `GH₵ ${totalShippingGhs.toFixed(2)} ($${totalShippingUsd.toFixed(2)})`;
-    document.getElementById('res-duties-total').textContent = `GH₵ ${totalDutiesGhs.toFixed(2)}`;
-    document.getElementById('res-clearing-total').textContent = `GH₵ ${totalClearingGhs.toFixed(2)}`;
-    document.getElementById('res-total-landed').textContent = `GH₵ ${totalLandedGhs.toFixed(2)}`;
-    document.getElementById('res-unit-landed').textContent = `GH₵ ${unitLandedGhs.toFixed(2)}`;
-    
-    document.getElementById('res-total-revenue').textContent = `GH₵ ${totalRevenueGhs.toFixed(2)}`;
-    
-    const resUnitProfit = document.getElementById('res-unit-profit');
-    const resTotalProfit = document.getElementById('res-total-profit');
-    const resMargin = document.getElementById('res-profit-margin');
+        function clearProductDetails() {
+            document.getElementById('productName').value = '';
+            document.getElementById('totalQuantity').value = '1';
+            document.getElementById('costPrice').value = '0';
+            calculate();
+        }
 
-    resUnitProfit.textContent = `GH₵ ${unitProfitGhs.toFixed(2)}`;
-    resTotalProfit.textContent = `GH₵ ${totalProfitGhs.toFixed(2)}`;
-    resMargin.textContent = `${marginPct.toFixed(1)}%`;
-
-    if (totalProfitGhs >= 0) {
-      resUnitProfit.className = 'result-val profit-positive';
-      resTotalProfit.className = 'result-val profit-positive';
-      resMargin.className = 'result-val profit-positive';
-    } else {
-      resUnitProfit.className = 'result-val profit-negative';
-      resTotalProfit.className = 'result-val profit-negative';
-      resMargin.className = 'result-val profit-negative';
-    }
-
-    // Dynamic WhatsApp Link Generation
-    const waPhone = "233549782683";
-    const waMessage = `Hello! I calculated an import order on your site and would like to proceed:\n\n` +
-      `📦 Item: ${prodName}\n` +
-      `🔢 Quantity: ${qty} units\n` +
-      `🚢 Method: ${shipMethod} (${shipQty} ${shipMethod === 'AIR' ? 'Kg' : 'CBM'})\n` +
-      `🇬🇭 Est. Duties/Taxes: GH₵ ${totalDutiesGhs.toFixed(2)}\n` +
-      `💰 Est. Landed Cost: GH₵ ${totalLandedGhs.toFixed(2)} (GH₵ ${unitLandedGhs.toFixed(2)}/unit)\n\n` +
-      `Please assist me with procurement/shipping!`;
-
-    document.getElementById('wa-send-btn').href = `https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`;
-  }
-
-  calculateLandedCost();
-</script>
-
+        // Initialize on page load
+        calculate();
+    </script>
 </body>
 </html>
