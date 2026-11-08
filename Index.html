@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ghana Import Calculator - Landed Cost, Margins & Profit</title>
+  <style>
+    :root {
+      --primary: #006b3f;
+      --accent: #ce1126;
+      --gold: #fcd116;
+      --bg: #f4f6f8;
+      --card-bg: #ffffff;
+      --text: #1a1a1a;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .flag-bar {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, #ce1126 33.3%, #fcd116 33.3%, #fcd116 66.6%, #006b3f 66.6%);
+      border-radius: 2px;
+    }
+
+    /* Dynamic Advertisement Block */
+    .ad-container {
+      background: #fffdf0;
+      border: 1px solid #fce788;
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .ad-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .ad-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .ad-content h3 {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .ad-content p {
+      font-size: 12px;
+      color: #555;
+    }
+
+    .ad-button {
+      background-color: #d97706;
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .ad-button:hover {
+      background-color: #b45309;
+    }
+
+    /* Calculator Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    .unit-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-left: auto;
+    }
+
+    .unit-toggle button {
+      padding: 4px 8px;
+      font-size: 11px;
+      border: none;
+      background: #f1f5f9;
+      cursor: pointer;
+    }
+
+    .unit-toggle button.active {
+      background: var(--primary);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>📦 Ghana Import Calculator</h1>
+    <p>Calculate landed cost, margins & profit for 1688, Alibaba & Taobao</p>
+  </div>
+
+  <div class="flag-bar"></div>
+
+  <!-- Dynamic Ad Section (Loads from ad.json) -->
+  <div class="ad-container" id="ad-container" style="display: none;">
+    <span class="ad-label">ADVERTISEMENT</span>
+    <div class="ad-body">
+      <div class="ad-content">
+        <h3 id="ad-title"></h3>
+        <p id="ad-desc"></p>
+      </div>
+      <a id="ad-link" href="#" target="_blank" rel="noopener noreferrer" class="ad-button">Learn More</a>
+    </div>
+  </div>
+
+  <!-- Exchange Rates Card -->
+  <div class="card">
+    <div class="card-title">
+      <span>💹 Live Exchange Rates</span>
+      <button class="reset-btn" onclick="resetRates()">Reset Rates</button>
+    </div>
+    <div class="grid-2">
+      <div class="input-group">
+        <label>1 USD ($) to GHS (GH₵)</label>
+        <input type="number" id="usd-rate" class="input-field" value="15.50" step="0.01" />
+      </div>
+      <div class="input-group">
+        <label>1 CNY (¥) to GHS (GH₵)</label>
+        <input type="number" id="cny-rate" class="input-field" value="2.15" step="0.01" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Costs Input Card -->
+  <div class="card">
+    <div class="card-title">
+      <span>Product Costs Input</span>
+      <button class="reset-btn" style="color: var(--accent);" onclick="clearForm()">Clear</button>
+    </div>
+
+    <div class="input-group">
+      <label>Product Name / Description</label>
+      <input type="text" id="prod-name" class="input-field" placeholder="e.g. Night wear" />
+    </div>
+
+    <div class="input-group">
+      <label>Total Quantity (Units) *</label>
+      <input type="number" id="prod-qty" class="input-field" placeholder="20" />
+    </div>
+
+    <div class="input-group">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <label>Cost Price per Unit *</label>
+        <div class="unit-toggle">
+          <button class="active">¥ CNY</button>
+          <button>$ USD</button>
+          <button>GH₵</button>
+        </div>
+      </div>
+      <input type="number" id="prod-cost" class="input-field" placeholder="20" step="0.01" />
+    </div>
+  </div>
+</div>
+
+<script>
+  // Dynamic Ad Fetch Script
+  fetch('./ad.json?t=' + Date.now())
+    .then(response => {
+      if (!response.ok) throw new Error('No ad config found');
+      return response.json();
+    })
+    .then(ad => {
+      if (ad && ad.active) {
+        document.getElementById('ad-title').textContent = ad.title;
+        document.getElementById('ad-desc').textContent = ad.description;
+        
+        const adLink = document.getElementById('ad-link');
+        adLink.textContent = ad.buttonText || 'Learn More';
+        adLink.href = ad.link;
+        
+        document.getElementById('ad-container').style.display = 'block';
+      }
+    })
+    .catch(err => console.log('Ad fetch status:', err));
+
+  function resetRates() {
+    document.getElementById('usd-rate').value = '15.50';
+    document.getElementById('cny-rate').value = '2.15';
+  }
+
+  function clearForm() {
+    document.getElementById('prod-name').value = '';
+    document.getElementById('prod-qty').value = '';
+    document.getElementById('prod-cost').value = '';
+  }
+</script>
+
+</body>
+</html>
