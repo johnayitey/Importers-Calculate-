@@ -67,7 +67,6 @@
       border-radius: 2px;
     }
 
-    /* Standard Card Styling */
     .card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -195,7 +194,30 @@
       color: #f87171 !important;
     }
 
-    /* Dynamic Advertisement Block (Positioned below Results Card) */
+    /* WhatsApp Lead Button */
+    .wa-book-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background-color: #25d366;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 16px;
+      box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+      transition: background-color 0.2s;
+    }
+
+    .wa-book-btn:hover {
+      background-color: #1ebd57;
+    }
+
+    /* Dynamic Advertisement Block */
     .ad-container {
       background: #fffdf0;
       border: 1px solid #fce788;
@@ -286,7 +308,7 @@
 
     <div class="input-group">
       <label>Product Name / Description</label>
-      <input type="text" id="prod-name" class="input-field" placeholder="e.g. Night wear" />
+      <input type="text" id="prod-name" class="input-field" placeholder="e.g. Night wear" oninput="calculateLandedCost()" />
     </div>
 
     <div class="grid-2">
@@ -412,9 +434,14 @@
       <span class="result-label">Profit Margin:</span>
       <span class="result-val" id="res-profit-margin">0%</span>
     </div>
+
+    <!-- WhatsApp Booking Button -->
+    <a id="wa-send-btn" href="#" target="_blank" rel="noopener noreferrer" class="wa-book-btn">
+      💬 Send Calculation to Agent on WhatsApp
+    </a>
   </div>
 
-  <!-- 6. Dynamic Advertisement Block (Positioned below the Calculator) -->
+  <!-- 6. Dynamic Advertisement Block -->
   <div class="ad-container" id="ad-container" style="display: none;">
     <span class="ad-label">ADVERTISEMENT</span>
     <div class="ad-body">
@@ -466,6 +493,7 @@
     const usdRate = parseFloat(document.getElementById('usd-rate').value) || 0;
     const cnyRate = parseFloat(document.getElementById('cny-rate').value) || 0;
 
+    const prodName = document.getElementById('prod-name').value || 'Unspecified Product';
     const qty = parseFloat(document.getElementById('prod-qty').value) || 0;
     const unitCost = parseFloat(document.getElementById('prod-cost').value) || 0;
     const currency = document.getElementById('cost-currency').value;
@@ -545,6 +573,17 @@
       resTotalProfit.className = 'result-val profit-negative';
       resMargin.className = 'result-val profit-negative';
     }
+
+    // Dynamic WhatsApp Link Generation
+    const waPhone = "233549782683";
+    const waMessage = `Hello! I calculated an import order on your site and would like to proceed:\n\n` +
+      `📦 Item: ${prodName}\n` +
+      `🔢 Quantity: ${qty} units\n` +
+      `🚢 Method: ${shipMethod} (${shipQty} ${shipMethod === 'AIR' ? 'Kg' : 'CBM'})\n` +
+      `💰 Est. Landed Cost: GH₵ ${totalLandedGhs.toFixed(2)} (GH₵ ${unitLandedGhs.toFixed(2)}/unit)\n\n` +
+      `Please assist me with procurement/shipping!`;
+
+    document.getElementById('wa-send-btn').href = `https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`;
   }
 
   calculateLandedCost();
