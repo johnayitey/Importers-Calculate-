@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghana Mini Importer Profit Calculator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Inter Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            ghanaGreen: {
+              DEFAULT: '#006B3F',
+              dark: '#004D2C',
+              light: '#E6F4ED',
+            },
+            ghanaGold: '#FCD116',
+            ghanaRed: '#CE1126',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar for better UI experience */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #006B3F;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen pb-12 flex flex-col justify-between">
+
+  <!-- Header Container -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-xl mx-auto px-4 pt-4 pb-3 text-center">
+      <div class="flex items-center justify-center space-x-2">
+        <i class="fa-solid fa-boxes-packing text-2xl text-ghanaGreen"></i>
+        <h1 class="text-2xl font-extrabold text-ghanaGreen tracking-tight">Ghana Import Calculator</h1>
+      </div>
+      <p class="text-xs text-gray-600 mt-1">Calculate landed cost, margins & profit for 1688, Alibaba & Taobao</p>
+    </div>
+
+    <!-- Ghana Flag Decorative Accent Bar -->
+    <div class="h-2.5 w-full flex">
+      <div class="h-full w-1/3 bg-[#CE1126]"></div>
+      <div class="h-full w-1/3 bg-[#FCD116] flex items-center justify-center">
+        <span class="text-[10px] text-black leading-none font-bold">★</span>
+      </div>
+      <div class="h-full w-1/3 bg-[#006B3F]"></div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-xl mx-auto px-4 py-4 space-y-4 w-full flex-grow">
+
+    <!-- Top Advertisement Banner Slot -->
+    <div class="w-full text-center">
+      <span class="text-[10px] text-gray-400 font-medium tracking-wider uppercase">Advertisement</span>
+      <div class="w-full bg-amber-50 border border-amber-300 rounded-xl p-3 text-center shadow-xs flex items-center justify-between cursor-pointer hover:bg-amber-100 transition">
+        <div class="flex items-center space-x-3 text-left">
+          <div class="bg-amber-500 text-white rounded-lg p-2 flex items-center justify-center">
+            <i class="fa-solid fa-plane-departure text-lg"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-gray-900 leading-tight">Fastest China to Ghana Air Freight</p>
+            <p class="text-[11px] text-gray-600">Get 5-7 days express clearing & door delivery in Accra!</p>
+          </div>
+        </div>
+        <span class="text-xs bg-amber-600 text-white px-2.5 py-1 rounded-md font-semibold text-nowrap">Learn More</span>
+      </div>
+    </div>
+
+    <!-- Exchange Rate Bar & Currency Controls -->
+    <section class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 space-y-3">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-coins text-ghanaGreen"></i> Live Exchange Rates
+        </h2>
+        <button id="resetRatesBtn" class="text-xs text-ghanaGreen hover:underline font-semibold">Reset Rates</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">1 USD ($) to GHS (GH¢)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">GH¢</span>
+            <input type="number" id="usdToGhs" step="0.1" value="15.50" 
+              class="w-full pl-10 pr-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen focus:border-ghanaGreen font-semibold text-gray-800">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">1 CNY (¥) to GHS (GH¢)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">GH¢</span>
+            <input type="number" id="rmbToGhs" step="0.01" value="2.15" 
+              class="w-full pl-10 pr-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen focus:border-ghanaGreen font-semibold text-gray-800">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Calculator Card -->
+    <section class="bg-white rounded-2xl p-5 shadow-md border border-gray-200">
+      <div class="border-b border-gray-100 pb-3 mb-4 flex justify-between items-center">
+        <div>
+          <h2 class="text-base font-bold text-gray-900">Product Costs Input</h2>
+          <p class="text-xs text-gray-500">Fill supplier price & logistics fees</p>
+        </div>
+        <button id="clearFormBtn" class="text-xs text-red-600 hover:text-red-800 font-semibold bg-red-50 px-2.5 py-1 rounded-md">
+          <i class="fa-solid fa-rotate-left mr-1"></i> Clear
+        </button>
+      </div>
+
+      <form id="calculatorForm" class="space-y-4" onsubmit="return false;">
+        
+        <!-- Product Name -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Product Name / Description</label>
+          <input type="text" id="productName" value="Smart Watch Series 9" placeholder="e.g. Smart Watch Series 9" 
+            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
+        </div>
+
+        <!-- Quantity & Unit Price Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Total Quantity (Units) *</label>
+            <input type="number" id="itemQuantity" min="1" value="10" required
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-semibold">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-semibold text-gray-700">Cost Price per Unit *</label>
+              <!-- Currency selector for purchase price -->
+              <div class="inline-flex rounded-md shadow-xs text-[11px]" role="group">
+                <button type="button" class="unit-curr-btn px-2 py-0.5 border border-gray-300 rounded-l-md bg-ghanaGreen text-white font-bold" data-curr="RMB">¥ CNY</button>
+                <button type="button" class="unit-curr-btn px-2 py-0.5 border-t border-b border-r border-gray-300 bg-gray-50 text-gray-700 font-medium" data-curr="USD">$ USD</button>
+                <button type="button" class="unit-curr-btn px-2 py-0.5 border-t border-b border-r border-gray-300 rounded-r-md bg-gray-50 text-gray-700 font-medium" data-curr="GHS">GH¢</button>
+              </div>
+            </div>
+            <div class="relative">
+              <span id="unitCurrSymbol" class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-sm">¥</span>
+              <input type="number" id="unitPrice" step="0.01" value="35.00" required
+                class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-semibold">
+            </div>
+          </div>
+        </div>
+
+        <!-- Domestic China Freight -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">China Domestic Supplier Shipping (¥ CNY)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-sm">¥</span>
+            <input type="number" id="chinaFreightRmb" step="0.1" value="15.00" 
+              class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
+          </div>
+          <p class="text-[11px] text-gray-400 mt-0.5">Inner-China courier fee to your agent's warehouse</p>
+        </div>
+
+        <!-- International Shipping Details -->
+        <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-ship text-ghanaGreen"></i> Int'l Shipping & Freight
+            </span>
+            <div class="flex space-x-2 text-xs">
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="radio" name="shippingType" value="air" checked class="text-ghanaGreen focus:ring-ghanaGreen">
+                <span class="ml-1 text-gray-700 font-semibold">Air (per kg)</span>
+              </label>
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="radio" name="shippingType" value="sea" class="text-ghanaGreen focus:ring-ghanaGreen">
+                <span class="ml-1 text-gray-700 font-semibold">Sea (per CBM)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label id="weightVolLabel" class="block text-xs font-semibold text-gray-700 mb-1">Total Weight (kg)</label>
+              <input type="number" id="totalWeightVol" step="0.01" value="2.5" 
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
+            </div>
+
+            <div>
+              <label id="freightRateLabel" class="block text-xs font-semibold text-gray-700 mb-1">Freight Rate ($/kg)</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">$</span>
+                <input type="number" id="freightRateUsd" step="0.1" value="12.00" 
+                  class="w-full pl-7 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customs, Clearing & Local Handling -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Customs & Clearing (GH¢)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">GH¢</span>
+              <input type="number" id="clearingCostGhs" step="1" value="50.00" 
+                class="w-full pl-9 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Local Delivery (GH¢)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">GH¢</span>
+              <input type="number" id="localDeliveryGhs" step="1" value="30.00" 
+                class="w-full pl-9 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Selling Price -->
+        <div class="pt-2 border-t border-gray-100">
+          <label class="block text-xs font-extrabold text-gray-800 mb-1">Target Selling Price per Unit (GH¢) *</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-ghanaGreen font-extrabold text-base">GH¢</span>
+            <input type="number" id="targetSellingPriceGhs" step="0.1" value="180.00" required
+              class="w-full pl-12 pr-3 py-2.5 text-base border-2 border-ghanaGreen rounded-xl focus:ring-2 focus:ring-ghanaGreen font-extrabold text-gray-900 bg-emerald-50/20">
+          </div>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- Calculation Results Card -->
+    <section class="bg-ghanaGreen text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <!-- Background pattern element -->
+      <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-black select-none pointer-events-none">GH¢</div>
+
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <span class="text-[11px] uppercase tracking-wider text-emerald-200 font-bold">Profit Summary</span>
+          <h3 class="text-xl font-extrabold">Results Overview</h3>
+        </div>
+        
+        <!-- Display Currency Selector for Output -->
+        <div class="bg-ghanaGreen-dark p-1 rounded-lg flex space-x-1 border border-emerald-600/50">
+          <button type="button" class="out-curr-btn text-xs px-2.5 py-1 rounded-md bg-white text-ghanaGreen font-bold" data-out="GHS">GHS</button>
+          <button type="button" class="out-curr-btn text-xs px-2.5 py-1 rounded-md text-emerald-100 hover:text-white font-medium" data-out="USD">USD</button>
+          <button type="button" class="out-curr-btn text-xs px-2.5 py-1 rounded-md text-emerald-100 hover:text-white font-medium" data-out="RMB">RMB</button>
+        </div>
+      </div>
+
+      <!-- Net Profit Highlight Box -->
+      <div id="profitHighlightBox" class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 mb-4 transition-all">
+        <div class="flex justify-between items-baseline">
+          <span class="text-xs text-emerald-100 font-semibold">Total Net Profit</span>
+          <span id="profitBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-400 text-ghanaGreen-dark font-black">PROFITABLE</span>
+        </div>
+        <div class="text-3xl font-black mt-1 tracking-tight" id="outTotalProfit">GH¢ 0.00</div>
+        <div class="flex justify-between text-xs text-emerald-100 mt-2 pt-2 border-t border-white/10">
+          <span>Profit Margin: <strong id="outMargin" class="text-white font-bold">0%</strong></span>
+          <span>ROI: <strong id="outRoi" class="text-white font-bold">0%</strong></span>
+        </div>
+      </div>
+
+      <!-- Detail Metrics Grid -->
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="bg-black/10 rounded-lg p-3">
+          <span class="text-emerald-200 block text-[11px]">Total Investment Cost</span>
+          <span id="outTotalCost" class="text-base font-extrabold block text-white mt-0.5">GH¢ 0.00</span>
+        </div>
+        <div class="bg-black/10 rounded-lg p-3">
+          <span class="text-emerald-200 block text-[11px]">Landed Cost / Unit</span>
+          <span id="outLandedCostUnit" class="text-base font-extrabold block text-white mt-0.5">GH¢ 0.00</span>
+        </div>
+        <div class="bg-black/10 rounded-lg p-3">
+          <span class="text-emerald-200 block text-[11px]">Total Expected Revenue</span>
+          <span id="outTotalRevenue" class="text-base font-extrabold block text-white mt-0.5">GH¢ 0.00</span>
+        </div>
+        <div class="bg-black/10 rounded-lg p-3">
+          <span class="text-emerald-200 block text-[11px]">Break-even Price/Unit</span>
+          <span id="outBreakEvenUnit" class="text-base font-extrabold block text-yellow-300 mt-0.5">GH¢ 0.00</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="grid grid-cols-2 gap-3 mt-4">
+        <button id="saveItemBtn" class="w-full py-2.5 bg-ghanaGold hover:bg-yellow-400 text-gray-900 font-bold rounded-xl shadow transition flex items-center justify-center gap-1.5 text-xs">
+          <i class="fa-solid fa-bookmark"></i> Save Item
+        </button>
+        <button id="copySummaryBtn" class="w-full py-2.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl border border-white/30 shadow transition flex items-center justify-center gap-1.5 text-xs">
+          <i class="fa-solid fa-copy"></i> Copy Summary
+        </button>
+      </div>
+    </section>
+
+    <!-- Daily Money & Import Tip Card -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+      <div class="flex items-center space-x-2 mb-2">
+        <span class="bg-ghanaGreen text-white text-xs px-2.5 py-0.5 rounded-full font-bold">TIP OF THE DAY</span>
+        <span class="text-xs text-gray-400 font-medium" id="tipCategory">Procurement Tip</span>
+      </div>
+      
+      <h3 class="text-base font-bold text-gray-900" id="tipTitle">Negotiating Inner China Shipping Fees</h3>
+      <p class="text-xs text-gray-600 mt-1 leading-relaxed" id="tipBody">
+        Always ask your 1688 suppliers to reduce domestic courier fees (快递费) before paying. If buying multiple items from one store, suppliers can consolidate and reduce inland freight!
+      </p>
+
+      <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+        <button id="nextTipBtn" class="text-xs font-bold text-ghanaGreen hover:text-ghanaGreen-dark flex items-center gap-1">
+          Next Tip <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <span class="text-[10px] text-gray-400">Updated daily for Ghana Mini-Importers</span>
+      </div>
+    </section>
+
+    <!-- History / Saved Products List -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-ghanaGreen"></i> Saved Import Comparisons
+        </h3>
+        <span id="savedCountBadge" class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full font-semibold">0 items</span>
+      </div>
+
+      <div id="savedListEmpty" class="text-center py-6 text-gray-400 text-xs">
+        <i class="fa-solid fa-folder-open text-2xl mb-1 text-gray-300"></i>
+        <p>No saved products yet. Click "Save Item" above to store calculations.</p>
+      </div>
+
+      <div id="savedListContainer" class="space-y-2 hidden max-h-60 overflow-y-auto pr-1">
+        <!-- Dynamic saved item rows injected here -->
+      </div>
+    </section>
+
+    <!-- Bottom Advertisement Banner Slot -->
+    <div class="w-full text-center">
+      <span class="text-[10px] text-gray-400 font-medium tracking-wider uppercase">Advertisement</span>
+      <div class="w-full bg-gray-900 text-white rounded-xl p-4 text-left shadow-md flex items-center justify-between cursor-pointer">
+        <div>
+          <span class="text-[10px] text-ghanaGold font-bold uppercase tracking-wide">1688 RMB Supplier Payment</span>
+          <h4 class="text-xs font-bold text-white mt-0.5">Pay Your China Suppliers Directly</h4>
+          <p class="text-[11px] text-gray-300 mt-0.5">Instant Alipay & WeChat Pay transfers at competitive GHS rates.</p>
+        </div>
+        <div class="bg-ghanaGreen px-3 py-1.5 rounded-lg text-xs font-bold text-white whitespace-nowrap ml-2">
+          Contact Agent
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="text-center py-4 text-xs text-gray-400 border-t border-gray-200 bg-white">
+    <p>Built for Ghanaian Mini Importers &bull; GH¢ / $ / ¥ Profit Calculator</p>
+  </footer>
+
+  <!-- Notification Toast Box -->
+  <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl border border-gray-700 opacity-0 pointer-events-none transition-opacity duration-300 z-50 flex items-center space-x-2">
+    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMsg">Action successful</span>
+  </div>
+
+  <!-- JavaScript App Logic -->
+  <script>
+    // State Variables
+    let selectedUnitCurr = 'RMB';
+    let selectedOutCurr = 'GHS';
+    let savedItems = [];
+
+    // Daily Tips Database
+    const tipsList = [
+      {
+        category: "1688 Sourcing",
+        title: "Negotiating Inner China Shipping Fees",
+        body: "Always ask your 1688 suppliers to reduce domestic courier fees (快递费) before paying. If buying multiple items from one store, suppliers can consolidate and reduce inland freight!"
+      },
+      {
+        category: "Forex & RMB",
+        title: "Exchange Rate Risk Management",
+        body: "China suppliers update prices when USD/RMB fluctuates. Always lock in your Alipay rate with your trusted Ghana exchanger before promising prices to retail buyers."
+      },
+      {
+        category: "Shipping & Clearing",
+        title: "Volumetric Weight vs Actual Weight",
+        body: "Air freight charges by whichever is higher between actual weight (kg) and volumetric weight (L x W x H / 6000). For light, bulky items like shoes or pillows, request compressed packing!"
+      },
+      {
+        category: "Customs Clearing",
+        title: "Sea Freight CBM Consolidation",
+        body: "For heavy items (hardware, machinery), sea groupage/CBM is significantly cheaper than air freight. Allow 35-45 days shipping window when calculating cash flow."
+      },
+      {
+        category: "Product Testing",
+        title: "Always Order Samples First",
+        body: "Never import 100+ units of an unverified 1688 item based on photos alone. Order 1-2 samples to inspect quality, weight, and packaging dimensions before placing a bulk order."
+      }
+    ];
+    let currentTipIdx = 0;
+
+    // DOM Elements
+    const usdToGhsInput = document.getElementById('usdToGhs');
+    const rmbToGhsInput = document.getElementById('rmbToGhs');
+    const resetRatesBtn = document.getElementById('resetRatesBtn');
+    
+    const productNameInput = document.getElementById('productName');
+    const itemQuantityInput = document.getElementById('itemQuantity');
+    const unitPriceInput = document.getElementById('unitPrice');
+    const unitCurrSymbol = document.getElementById('unitCurrSymbol');
+    const chinaFreightRmbInput = document.getElementById('chinaFreightRmb');
+    
+    const totalWeightVolInput = document.getElementById('totalWeightVol');
+    const freightRateUsdInput = document.getElementById('freightRateUsd');
+    const weightVolLabel = document.getElementById('weightVolLabel');
+    const freightRateLabel = document.getElementById('freightRateLabel');
+    
+    const clearingCostGhsInput = document.getElementById('clearingCostGhs');
+    const localDeliveryGhsInput = document.getElementById('localDeliveryGhs');
+    const targetSellingPriceGhsInput = document.getElementById('targetSellingPriceGhs');
+    
+    // Outputs
+    const outTotalProfit = document.getElementById('outTotalProfit');
+    const outMargin = document.getElementById('outMargin');
+    const outRoi = document.getElementById('outRoi');
+    const outTotalCost = document.getElementById('outTotalCost');
+    const outLandedCostUnit = document.getElementById('outLandedCostUnit');
+    const outTotalRevenue = document.getElementById('outTotalRevenue');
+    const outBreakEvenUnit = document.getElementById('outBreakEvenUnit');
+    const profitBadge = document.getElementById('profitBadge');
+
+    // Action Buttons
+    const clearFormBtn = document.getElementById('clearFormBtn');
+    const saveItemBtn = document.getElementById('saveItemBtn');
+    const copySummaryBtn = document.getElementById('copySummaryBtn');
+    const nextTipBtn = document.getElementById('nextTipBtn');
+    
+    // Toast & Storage
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    const savedListContainer = document.getElementById('savedListContainer');
+    const savedListEmpty = document.getElementById('savedListEmpty');
+    const savedCountBadge = document.getElementById('savedCountBadge');
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedItems();
+      calculateAll();
+      setupEventListeners();
+    });
+
+    function setupEventListeners() {
+      // Inputs event listeners for live recalculation
+      const inputs = [
+        usdToGhsInput, rmbToGhsInput, itemQuantityInput, unitPriceInput,
+        chinaFreightRmbInput, totalWeightVolInput, freightRateUsdInput,
+        clearingCostGhsInput, localDeliveryGhsInput, targetSellingPriceGhsInput
+      ];
+      inputs.forEach(input => input.addEventListener('input', calculateAll));
+
+      // Currency Unit Toggle for Supplier Price
+      document.querySelectorAll('.unit-curr-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.unit-curr-btn').forEach(b => {
+            b.classList.remove('bg-ghanaGreen', 'text-white', 'font-bold');
+            b.classList.add('bg-gray-50', 'text-gray-700', 'font-medium');
+          });
+          const target = e.currentTarget;
+          target.classList.remove('bg-gray-50', 'text-gray-700', 'font-medium');
+          target.classList.add('bg-ghanaGreen', 'text-white', 'font-bold');
+          
+          selectedUnitCurr = target.dataset.curr;
+          unitCurrSymbol.textContent = selectedUnitCurr === 'RMB' ? '¥' : (selectedUnitCurr === 'USD' ? '$' : 'GH¢');
+          calculateAll();
+        });
+      });
+
+      // Currency Output Switcher
+      document.querySelectorAll('.out-curr-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.out-curr-btn').forEach(b => {
+            b.classList.remove('bg-white', 'text-ghanaGreen', 'font-bold');
+            b.classList.add('text-emerald-100', 'font-medium');
+          });
+          const target = e.currentTarget;
+          target.classList.remove('text-emerald-100', 'font-medium');
+          target.classList.add('bg-white', 'text-ghanaGreen', 'font-bold');
+          
+          selectedOutCurr = target.dataset.out;
+          calculateAll();
+        });
+      });
+
+      // Shipping Type Switcher (Air vs Sea)
+      document.querySelectorAll('input[name="shippingType"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          if (e.target.value === 'air') {
+            weightVolLabel.textContent = 'Total Weight (kg)';
+            freightRateLabel.textContent = 'Freight Rate ($/kg)';
+            if (freightRateUsdInput.value == '280') freightRateUsdInput.value = '12.00';
+          } else {
+            weightVolLabel.textContent = 'Total Volume (CBM)';
+            freightRateLabel.textContent = 'Sea Freight Rate ($/CBM)';
+            freightRateUsdInput.value = '280.00';
+          }
+          calculateAll();
+        });
+      });
+
+      // Reset Rates
+      resetRatesBtn.addEventListener('click', () => {
+        usdToGhsInput.value = '15.50';
+        rmbToGhsInput.value = '2.15';
+        showToast('Exchange rates reset to default');
+        calculateAll();
+      });
+
+      // Clear Form
+      clearFormBtn.addEventListener('click', () => {
+        productNameInput.value = '';
+        itemQuantityInput.value = '1';
+        unitPriceInput.value = '0';
+        chinaFreightRmbInput.value = '0';
+        totalWeightVolInput.value = '0';
+        clearingCostGhsInput.value = '0';
+        localDeliveryGhsInput.value = '0';
+        targetSellingPriceGhsInput.value = '0';
+        calculateAll();
+        showToast('Form cleared');
+      });
+
+      // Save Item
+      saveItemBtn.addEventListener('click', saveCurrentCalculation);
+
+      // Copy Summary
+      copySummaryBtn.addEventListener('click', copySummaryToClipboard);
+
+      // Next Tip Carousel
+      nextTipBtn.addEventListener('click', rotateTip);
+    }
+
+    // Core Calculation Logic
+    function calculateAll() {
+      // Fetch Rates
+      const usdToGhs = parseFloat(usdToGhsInput.value) || 0;
+      const rmbToGhs = parseFloat(rmbToGhsInput.value) || 0;
+
+      // Fetch Form Inputs
+      const qty = parseFloat(itemQuantityInput.value) || 0;
+      const unitPrice = parseFloat(unitPriceInput.value) || 0;
+      const chinaFreightRmb = parseFloat(chinaFreightRmbInput.value) || 0;
+      const weightVol = parseFloat(totalWeightVolInput.value) || 0;
+      const freightRateUsd = parseFloat(freightRateUsdInput.value) || 0;
+      const clearingCostGhs = parseFloat(clearingCostGhsInput.value) || 0;
+      const localDeliveryGhs = parseFloat(localDeliveryGhsInput.value) || 0;
+      const targetSellingGhs = parseFloat(targetSellingPriceGhsInput.value) || 0;
+
+      // 1. Convert Item Sourcing Cost to GHS
+      let unitCostGhs = 0;
+      if (selectedUnitCurr === 'RMB') {
+        unitCostGhs = unitPrice * rmbToGhs;
+      } else if (selectedUnitCurr === 'USD') {
+        unitCostGhs = unitPrice * usdToGhs;
+      } else {
+        unitCostGhs = unitPrice; // Already GHS
+      }
+      const totalSourcingGhs = unitCostGhs * qty;
+
+      // 2. Domestic Freight to GHS
+      const chinaFreightGhs = chinaFreightRmb * rmbToGhs;
+
+      // 3. International Shipping to GHS
+      const intlFreightUsd = weightVol * freightRateUsd;
+      const intlFreightGhs = intlFreightUsd * usdToGhs;
+
+      // 4. Total Investment / Landed Cost in GHS
+      const totalInvestmentGhs = totalSourcingGhs + chinaFreightGhs + intlFreightGhs + clearingCostGhs + localDeliveryGhs;
+      const landedCostPerUnitGhs = qty > 0 ? (totalInvestmentGhs / qty) : 0;
+
+      // 5. Revenue & Profit Calculations in GHS
+      const totalRevenueGhs = targetSellingGhs * qty;
+      const netProfitGhs = totalRevenueGhs - totalInvestmentGhs;
+      
+      const profitMarginPct = totalRevenueGhs > 0 ? ((netProfitGhs / totalRevenueGhs) * 100) : 0;
+      const roiPct = totalInvestmentGhs > 0 ? ((netProfitGhs / totalInvestmentGhs) * 100) : 0;
+      const breakEvenGhs = landedCostPerUnitGhs;
+
+      // 6. Currency Conversion Factor for Output Display
+      let currSymbol = 'GH¢';
+      let currMultiplier = 1;
+
+      if (selectedOutCurr === 'USD') {
+        currSymbol = '$';
+        currMultiplier = usdToGhs > 0 ? (1 / usdToGhs) : 0;
+      } else if (selectedOutCurr === 'RMB') {
+        currSymbol = '¥';
+        currMultiplier = rmbToGhs > 0 ? (1 / rmbToGhs) : 0;
+      }
+
+      // Update DOM UI
+      outTotalProfit.textContent = formatMoney(netProfitGhs * currMultiplier, currSymbol);
+      outTotalCost.textContent = formatMoney(totalInvestmentGhs * currMultiplier, currSymbol);
+      outLandedCostUnit.textContent = formatMoney(landedCostPerUnitGhs * currMultiplier, currSymbol);
+      outTotalRevenue.textContent = formatMoney(totalRevenueGhs * currMultiplier, currSymbol);
+      outBreakEvenUnit.textContent = formatMoney(breakEvenGhs * currMultiplier, currSymbol);
+      
+      outMargin.textContent = `${profitMarginPct.toFixed(1)}%`;
+      outRoi.textContent = `${roiPct.toFixed(1)}%`;
+
+      // Visual styling based on Profit/Loss
+      if (netProfitGhs >= 0) {
+        profitBadge.textContent = 'PROFITABLE';
+        profitBadge.className = 'text-[11px] px-2 py-0.5 rounded-full bg-emerald-400 text-ghanaGreen-dark font-black';
+        outTotalProfit.className = 'text-3xl font-black mt-1 tracking-tight text-white';
+      } else {
+        profitBadge.textContent = 'LOSS WARNING';
+        profitBadge.className = 'text-[11px] px-2 py-0.5 rounded-full bg-red-400 text-red-950 font-black';
+        outTotalProfit.className = 'text-3xl font-black mt-1 tracking-tight text-red-200';
+      }
+
+      // Return object for saving/exporting
+      return {
+        name: productNameInput.value.trim() || 'Untitled Product',
+        qty,
+        landedCostGhs: landedCostPerUnitGhs,
+        totalCostGhs: totalInvestmentGhs,
+        sellingPriceGhs: targetSellingGhs,
+        netProfitGhs: netProfitGhs,
+        marginPct: profitMarginPct,
+        roiPct: roiPct
+      };
+    }
+
+    // Helper Formatting Function
+    function formatMoney(amount, symbol = 'GH¢') {
+      return `${symbol} ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // Toast Notification
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    // Daily Tip Carousel Rotator
+    function rotateTip() {
+      currentTipIdx = (currentTipIdx + 1) % tipsList.length;
+      const tip = tipsList[currentTipIdx];
+      document.getElementById('tipCategory').textContent = tip.category;
+      document.getElementById('tipTitle').textContent = tip.title;
+      document.getElementById('tipBody').textContent = tip.body;
+    }
+
+    // Storage: Save Current Product Calculation
+    function saveCurrentCalculation() {
+      const current = calculateAll();
+      const newItem = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('en-GB'),
+        ...current
+      };
+
+      savedItems.unshift(newItem);
+      saveItemsToLocalStorage();
+      renderSavedList();
+      showToast('Product saved to comparison list');
+    }
+
+    function deleteSavedItem(id) {
+      savedItems = savedItems.filter(item => item.id !== id);
+      saveItemsToLocalStorage();
+      renderSavedList();
+      showToast('Item removed');
+    }
+
+    function saveItemsToLocalStorage() {
+      try {
+        localStorage.setItem('ghana_import_calc_history', JSON.stringify(savedItems));
+      } catch (e) {
+        console.warn('LocalStorage unavailable');
+      }
+    }
+
+    function loadSavedItems() {
+      try {
+        const stored = localStorage.getItem('ghana_import_calc_history');
+        if (stored) {
+          savedItems = JSON.parse(stored);
+          renderSavedList();
+        }
+      } catch (e) {
+        savedItems = [];
+      }
+    }
+
+    function renderSavedList() {
+      savedCountBadge.textContent = `${savedItems.length} item${savedItems.length === 1 ? '' : 's'}`;
+
+      if (savedItems.length === 0) {
+        savedListEmpty.classList.remove('hidden');
+        savedListContainer.classList.add('hidden');
+        return;
+      }
+
+      savedListEmpty.classList.add('hidden');
+      savedListContainer.classList.remove('hidden');
+      savedListContainer.innerHTML = '';
+
+      savedItems.forEach(item => {
+        const isProfit = item.netProfitGhs >= 0;
+        const row = document.createElement('div');
+        row.className = 'p-3 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between text-xs hover:border-ghanaGreen transition';
+        row.innerHTML = `
+          <div>
+            <div class="font-bold text-gray-900">${escapeHtml(item.name)} <span class="text-[10px] text-gray-400 font-normal">(${item.qty} units)</span></div>
+            <div class="text-[11px] text-gray-500 mt-0.5">
+              Landed: <strong class="text-gray-800">GH¢ ${item.landedCostGhs.toFixed(2)}</strong> | 
+              Sell: <strong class="text-gray-800">GH¢ ${item.sellingPriceGhs.toFixed(2)}</strong>
+            </div>
+          </div>
+          <div class="flex items-center space-x-3">
+            <div class="text-right">
+              <span class="block font-black ${isProfit ? 'text-emerald-700' : 'text-red-600'}">
+                ${isProfit ? '+' : ''}GH¢ ${item.netProfitGhs.toFixed(2)}
+              </span>
+              <span class="text-[10px] font-semibold text-gray-500">${item.marginPct.toFixed(1)}% margin</span>
+            </div>
+            <button onclick="deleteSavedItem(${item.id})" class="text-gray-400 hover:text-red-600 p-1">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        savedListContainer.appendChild(row);
+      });
+    }
+
+    // Copy Summary Text for WhatsApp/Sharing
+    function copySummaryToClipboard() {
+      const calc = calculateAll();
+      const summaryText = 
+`📦 *GHANA IMPORT PROFIT SUMMARY*
+----------------------------------------
+*Product:* ${calc.name}
+*Quantity:* ${calc.qty} units
+
+*Landed Cost/Unit:* GH¢ ${calc.landedCostGhs.toFixed(2)}
+*Target Selling Price:* GH¢ ${calc.sellingPriceGhs.toFixed(2)}
+----------------------------------------
+*Total Investment:* GH¢ ${calc.totalCostGhs.toFixed(2)}
+*Net Profit:* GH¢ ${calc.netProfitGhs.toFixed(2)}
+*Profit Margin:* ${calc.marginPct.toFixed(1)}%
+*ROI:* ${calc.roiPct.toFixed(1)}%
+
+Calculated using *Ghana Import Calculator* 🇬🇭`;
+
+      const tempInput = document.createElement('textarea');
+      tempInput.value = summaryText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        showToast('Summary copied to clipboard!');
+      } catch (err) {
+        showToast('Failed to copy');
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
