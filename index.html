@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ghana Import Calculator - Landed Cost, Margins & Profit</title>
+  <title>Ghana Import Calculator - Landed Cost, Duties & Profit</title>
   <style>
     :root {
       --primary: #006b3f;
@@ -129,6 +129,25 @@
 
     .input-field:focus, select.input-field:focus {
       border-color: var(--primary);
+    }
+
+    /* Smart Advisor Box */
+    .advisor-box {
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      color: #1e40af;
+      margin-top: 8px;
+    }
+
+    .advisor-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     /* Results Summary Card Styling */
@@ -276,7 +295,7 @@
   <!-- Header -->
   <div class="header">
     <h1>📦 Ghana Import Calculator</h1>
-    <p>Calculate landed cost, margins & profit for 1688, Alibaba & Taobao</p>
+    <p>Calculate landed cost, duties, margins & profit for 1688, Alibaba & Taobao</p>
   </div>
 
   <div class="flag-bar"></div>
@@ -364,9 +383,42 @@
         <input type="number" id="clearing-fee" class="input-field" value="50" step="1" oninput="calculateLandedCost()" />
       </div>
     </div>
+
+    <!-- Smart Freight Advisor Widget -->
+    <div class="advisor-box" id="freight-advisor">
+      <div class="advisor-title">💡 Shipping Advisor</div>
+      <span id="advisor-text">Calculating optimal shipping mode...</span>
+    </div>
   </div>
 
-  <!-- 4. Pricing & Margin Target Card -->
+  <!-- 4. Customs Duty & Taxes Card -->
+  <div class="card">
+    <div class="card-title">
+      <span>🇬🇭 Customs Duty & Port Taxes (Est.)</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="input-group">
+        <label>Duty Category (Est. Rate)</label>
+        <select id="duty-category" class="input-field" onchange="calculateLandedCost()">
+          <option value="0">0% - Exempt / Door-to-Door Door Cargo</option>
+          <option value="0.05">5% - Raw Materials / Basic Goods</option>
+          <option value="0.10">10% - Intermediate / Capital Goods</option>
+          <option value="0.20" selected>20% - Standard Finished Consumer Goods</option>
+          <option value="0.35">35% - Luxury Goods / High Tariff</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Include Port Levies & VAT</label>
+        <select id="include-vat" class="input-field" onchange="calculateLandedCost()">
+          <option value="YES" selected>Yes (Standard ~15% Extras)</option>
+          <option value="NO">No (Duty Only)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Pricing & Margin Target Card -->
   <div class="card">
     <div class="card-title">
       <span>💰 Selling Price & Margin</span>
@@ -384,7 +436,7 @@
     </div>
   </div>
 
-  <!-- 5. Live Results Breakdown Card -->
+  <!-- 6. Live Results Breakdown Card -->
   <div class="results-card">
     <div class="card-title">
       <span>📊 Landed Cost & Profit Breakdown</span>
@@ -396,8 +448,13 @@
     </div>
 
     <div class="result-row">
-      <span class="result-label">Shipping & Logistics Total:</span>
+      <span class="result-label">Shipping & Freight Total:</span>
       <span class="result-val" id="res-shipping-total">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Est. Customs Duty & Taxes:</span>
+      <span class="result-val" id="res-duties-total">GH₵ 0.00</span>
     </div>
 
     <div class="result-row">
@@ -441,7 +498,7 @@
     </a>
   </div>
 
-  <!-- 6. Dynamic Advertisement Block -->
+  <!-- 7. Dynamic Advertisement Block -->
   <div class="ad-container" id="ad-container" style="display: none;">
     <span class="ad-label">ADVERTISEMENT</span>
     <div class="ad-body">
@@ -505,6 +562,9 @@
     const shipRate = parseFloat(document.getElementById('ship-rate').value) || 0;
     const clearingFee = parseFloat(document.getElementById('clearing-fee').value) || 0;
 
+    const dutyCategoryRate = parseFloat(document.getElementById('duty-category').value) || 0;
+    const includeVat = document.getElementById('include-vat').value;
+
     const targetPrice = parseFloat(document.getElementById('target-price').value) || 0;
     const localExtra = parseFloat(document.getElementById('local-extra').value) || 0;
 
@@ -538,9 +598,15 @@
     }
     const totalShippingGhs = totalShippingUsd * usdRate;
 
+    // Customs Duty Calculation (CIF Basis = Supplier + Freight)
+    const cifGhs = totalSupplierGhs + totalShippingGhs;
+    const baseDutyGhs = cifGhs * dutyCategoryRate;
+    const vatAndLeviesGhs = includeVat === 'YES' ? (cifGhs + baseDutyGhs) * 0.15 : 0;
+    const totalDutiesGhs = baseDutyGhs + vatAndLeviesGhs;
+
     const totalClearingGhs = clearingFee + (localExtra * qty);
 
-    const totalLandedGhs = totalSupplierGhs + totalShippingGhs + totalClearingGhs;
+    const totalLandedGhs = totalSupplierGhs + totalShippingGhs + totalDutiesGhs + totalClearingGhs;
     const unitLandedGhs = qty > 0 ? (totalLandedGhs / qty) : 0;
 
     const totalRevenueGhs = targetPrice * qty;
@@ -548,8 +614,21 @@
     const unitProfitGhs = qty > 0 ? (totalProfitGhs / qty) : 0;
     const marginPct = totalRevenueGhs > 0 ? ((totalProfitGhs / totalRevenueGhs) * 100) : 0;
 
+    // Smart Freight Advisor Logic
+    const advisorText = document.getElementById('advisor-text');
+    if (shipMethod === 'AIR' && shipQty >= 25) {
+      advisorText.innerHTML = `⚠️ <b>Heavy Cargo Alert:</b> At ${shipQty} Kg, consider switching to <b>Sea Freight</b> to cut shipping costs by up to 60%.`;
+    } else if (shipMethod === 'SEA' && shipQty < 0.3) {
+      advisorText.innerHTML = `⚡ <b>Small Parcel Alert:</b> For small volumes below 0.3 CBM, <b>Air Freight</b> is usually faster and more cost-effective.`;
+    } else if (shipMethod === 'AIR') {
+      advisorText.innerHTML = `✈️ <b>Air Freight Recommended:</b> Ideal for small, high-value, or fast-turnover products.`;
+    } else {
+      advisorText.innerHTML = `🚢 <b>Sea Freight Recommended:</b> Best for bulky, heavy shipments to maximize profit margins.`;
+    }
+
     document.getElementById('res-supplier-total').textContent = `GH₵ ${totalSupplierGhs.toFixed(2)}`;
     document.getElementById('res-shipping-total').textContent = `GH₵ ${totalShippingGhs.toFixed(2)} ($${totalShippingUsd.toFixed(2)})`;
+    document.getElementById('res-duties-total').textContent = `GH₵ ${totalDutiesGhs.toFixed(2)}`;
     document.getElementById('res-clearing-total').textContent = `GH₵ ${totalClearingGhs.toFixed(2)}`;
     document.getElementById('res-total-landed').textContent = `GH₵ ${totalLandedGhs.toFixed(2)}`;
     document.getElementById('res-unit-landed').textContent = `GH₵ ${unitLandedGhs.toFixed(2)}`;
@@ -580,6 +659,7 @@
       `📦 Item: ${prodName}\n` +
       `🔢 Quantity: ${qty} units\n` +
       `🚢 Method: ${shipMethod} (${shipQty} ${shipMethod === 'AIR' ? 'Kg' : 'CBM'})\n` +
+      `🇬🇭 Est. Duties/Taxes: GH₵ ${totalDutiesGhs.toFixed(2)}\n` +
       `💰 Est. Landed Cost: GH₵ ${totalLandedGhs.toFixed(2)} (GH₵ ${unitLandedGhs.toFixed(2)}/unit)\n\n` +
       `Please assist me with procurement/shipping!`;
 
