@@ -46,21 +46,15 @@
       background: #006B3F;
       border-radius: 4px;
     }
-    /* Tab highlight transition */
-    .tab-btn.active {
-      background-color: #006B3F;
-      color: #ffffff;
-      font-weight: 600;
-    }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen pb-12">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen pb-12 flex flex-col justify-between">
 
   <!-- Header Container -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-xl mx-auto px-4 pt-4 pb-3 text-center">
       <div class="flex items-center justify-center space-x-2">
-        <i class="fa-solid font-bold text-2xl text-ghanaGreen fa-boxes-packing"></i>
+        <i class="fa-solid fa-boxes-packing text-2xl text-ghanaGreen"></i>
         <h1 class="text-2xl font-extrabold text-ghanaGreen tracking-tight">Ghana Import Calculator</h1>
       </div>
       <p class="text-xs text-gray-600 mt-1">Calculate landed cost, margins & profit for 1688, Alibaba & Taobao</p>
@@ -70,7 +64,6 @@
     <div class="h-2.5 w-full flex">
       <div class="h-full w-1/3 bg-[#CE1126]"></div>
       <div class="h-full w-1/3 bg-[#FCD116] flex items-center justify-center">
-        <!-- Black Star Icon -->
         <span class="text-[10px] text-black leading-none font-bold">★</span>
       </div>
       <div class="h-full w-1/3 bg-[#006B3F]"></div>
@@ -78,15 +71,15 @@
   </header>
 
   <!-- Main Content Layout -->
-  <main class="max-w-xl mx-auto px-4 py-4 space-y-4">
+  <main class="max-w-xl mx-auto px-4 py-4 space-y-4 w-full flex-grow">
 
     <!-- Top Advertisement Banner Slot -->
     <div class="w-full text-center">
       <span class="text-[10px] text-gray-400 font-medium tracking-wider uppercase">Advertisement</span>
-      <div class="w-full bg-amber-50 border border-amber-300 rounded-lg p-3 text-center shadow-xs flex items-center justify-between cursor-pointer hover:bg-amber-100 transition">
+      <div class="w-full bg-amber-50 border border-amber-300 rounded-xl p-3 text-center shadow-xs flex items-center justify-between cursor-pointer hover:bg-amber-100 transition">
         <div class="flex items-center space-x-3 text-left">
-          <div class="bg-amber-500 text-white rounded p-2 flex items-center justify-center">
-            <i class="fa-solid fa-[#006B3F] fa-plane-departure text-lg"></i>
+          <div class="bg-amber-500 text-white rounded-lg p-2 flex items-center justify-center">
+            <i class="fa-solid fa-plane-departure text-lg"></i>
           </div>
           <div>
             <p class="text-xs font-bold text-gray-900 leading-tight">Fastest China to Ghana Air Freight</p>
@@ -97,13 +90,13 @@
       </div>
     </div>
 
-    <!-- Exchange Rate Bar & Controls -->
-    <section class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-      <div class="flex justify-between items-center mb-2">
+    <!-- Exchange Rate Bar & Currency Controls -->
+    <section class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 space-y-3">
+      <div class="flex justify-between items-center">
         <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-          <i class="fa-solid fa-[#006B3F] fa-coins text-ghanaGreen"></i> Exchange Rates (Editable)
+          <i class="fa-solid fa-coins text-ghanaGreen"></i> Live Exchange Rates
         </h2>
-        <button id="resetRatesBtn" class="text-xs text-ghanaGreen hover:underline font-medium">Reset Defaults</button>
+        <button id="resetRatesBtn" class="text-xs text-ghanaGreen hover:underline font-semibold">Reset Rates</button>
       </div>
 
       <div class="grid grid-cols-2 gap-3">
@@ -116,7 +109,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">1 RMB (¥) to GHS (GH¢)</label>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">1 CNY (¥) to GHS (GH¢)</label>
           <div class="relative">
             <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">GH¢</span>
             <input type="number" id="rmbToGhs" step="0.01" value="2.15" 
@@ -130,21 +123,21 @@
     <section class="bg-white rounded-2xl p-5 shadow-md border border-gray-200">
       <div class="border-b border-gray-100 pb-3 mb-4 flex justify-between items-center">
         <div>
-          <h2 class="text-lg font-bold text-gray-900">Product Costs Input</h2>
-          <p class="text-xs text-gray-500">Fill in supplier details & local handling</p>
+          <h2 class="text-base font-bold text-gray-900">Product Costs Input</h2>
+          <p class="text-xs text-gray-500">Fill supplier price & logistics fees</p>
         </div>
         <button id="clearFormBtn" class="text-xs text-red-600 hover:text-red-800 font-semibold bg-red-50 px-2.5 py-1 rounded-md">
           <i class="fa-solid fa-rotate-left mr-1"></i> Clear
         </button>
       </div>
 
-      <form id="calculatorForm" class="space-y-4">
+      <form id="calculatorForm" class="space-y-4" onsubmit="return false;">
         
-        <!-- Product Name / Title -->
+        <!-- Product Name -->
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">Product Description / Name</label>
-          <input type="text" id="productName" placeholder="e.g. Smart Watch Series 9" 
-            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen focus:border-ghanaGreen">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Product Name / Description</label>
+          <input type="text" id="productName" value="Smart Watch Series 9" placeholder="e.g. Smart Watch Series 9" 
+            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
         </div>
 
         <!-- Quantity & Unit Price Row -->
@@ -160,7 +153,7 @@
               <label class="text-xs font-semibold text-gray-700">Cost Price per Unit *</label>
               <!-- Currency selector for purchase price -->
               <div class="inline-flex rounded-md shadow-xs text-[11px]" role="group">
-                <button type="button" class="unit-curr-btn px-2 py-0.5 border border-gray-300 rounded-l-md bg-ghanaGreen text-white font-bold" data-curr="RMB">¥ RMB</button>
+                <button type="button" class="unit-curr-btn px-2 py-0.5 border border-gray-300 rounded-l-md bg-ghanaGreen text-white font-bold" data-curr="RMB">¥ CNY</button>
                 <button type="button" class="unit-curr-btn px-2 py-0.5 border-t border-b border-r border-gray-300 bg-gray-50 text-gray-700 font-medium" data-curr="USD">$ USD</button>
                 <button type="button" class="unit-curr-btn px-2 py-0.5 border-t border-b border-r border-gray-300 rounded-r-md bg-gray-50 text-gray-700 font-medium" data-curr="GHS">GH¢</button>
               </div>
@@ -175,13 +168,13 @@
 
         <!-- Domestic China Freight -->
         <div>
-          <label class="block text-xs font-semibold text-gray-700 mb-1">China Supplier to Warehouse Shipping (¥ RMB)</label>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">China Domestic Supplier Shipping (¥ CNY)</label>
           <div class="relative">
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-sm">¥</span>
             <input type="number" id="chinaFreightRmb" step="0.1" value="15.00" 
-              class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen">
+              class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
           </div>
-          <p class="text-[11px] text-gray-400 mt-0.5">Inner China express delivery fee to your agent's warehouse</p>
+          <p class="text-[11px] text-gray-400 mt-0.5">Inner-China courier fee to your agent's warehouse</p>
         </div>
 
         <!-- International Shipping Details -->
@@ -206,7 +199,7 @@
             <div>
               <label id="weightVolLabel" class="block text-xs font-semibold text-gray-700 mb-1">Total Weight (kg)</label>
               <input type="number" id="totalWeightVol" step="0.01" value="2.5" 
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen">
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
             </div>
 
             <div>
@@ -214,7 +207,7 @@
               <div class="relative">
                 <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">$</span>
                 <input type="number" id="freightRateUsd" step="0.1" value="12.00" 
-                  class="w-full pl-7 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen">
+                  class="w-full pl-7 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
               </div>
             </div>
           </div>
@@ -227,7 +220,7 @@
             <div class="relative">
               <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">GH¢</span>
               <input type="number" id="clearingCostGhs" step="1" value="50.00" 
-                class="w-full pl-9 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen">
+                class="w-full pl-9 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
             </div>
           </div>
 
@@ -236,7 +229,7 @@
             <div class="relative">
               <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-gray-400 text-xs font-bold">GH¢</span>
               <input type="number" id="localDeliveryGhs" step="1" value="30.00" 
-                class="w-full pl-9 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen">
+                class="w-full pl-9 pr-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-ghanaGreen font-medium">
             </div>
           </div>
         </div>
@@ -317,7 +310,7 @@
       </div>
     </section>
 
-    <!-- Daily Money & Import Tip Card (Styled like Screenshot) -->
+    <!-- Daily Money & Import Tip Card -->
     <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
       <div class="flex items-center space-x-2 mb-2">
         <span class="bg-ghanaGreen text-white text-xs px-2.5 py-0.5 rounded-full font-bold">TIP OF THE DAY</span>
@@ -326,7 +319,7 @@
       
       <h3 class="text-base font-bold text-gray-900" id="tipTitle">Negotiating Inner China Shipping Fees</h3>
       <p class="text-xs text-gray-600 mt-1 leading-relaxed" id="tipBody">
-        Always ask your 1688 suppliers to reduce the domestic courier fee (快递费) before paying. If buying multiple items from one store, they almost always consolidate and reduce inland freight!
+        Always ask your 1688 suppliers to reduce domestic courier fees (快递费) before paying. If buying multiple items from one store, suppliers can consolidate and reduce inland freight!
       </p>
 
       <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
@@ -337,7 +330,7 @@
       </div>
     </section>
 
-    <!-- History / Saved Products Drawer/List -->
+    <!-- History / Saved Products List -->
     <section class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-sm font-bold text-gray-900 flex items-center gap-2">
@@ -373,6 +366,10 @@
 
   </main>
 
+  <footer class="text-center py-4 text-xs text-gray-400 border-t border-gray-200 bg-white">
+    <p>Built for Ghanaian Mini Importers &bull; GH¢ / $ / ¥ Profit Calculator</p>
+  </footer>
+
   <!-- Notification Toast Box -->
   <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl border border-gray-700 opacity-0 pointer-events-none transition-opacity duration-300 z-50 flex items-center space-x-2">
     <i class="fa-solid fa-circle-check text-emerald-400"></i>
@@ -391,12 +388,12 @@
       {
         category: "1688 Sourcing",
         title: "Negotiating Inner China Shipping Fees",
-        body: "Always ask your 1688 suppliers to reduce the domestic courier fee (快递费) before paying. If buying multiple items from one store, they almost always consolidate and discount inland freight!"
+        body: "Always ask your 1688 suppliers to reduce domestic courier fees (快递费) before paying. If buying multiple items from one store, suppliers can consolidate and reduce inland freight!"
       },
       {
         category: "Forex & RMB",
         title: "Exchange Rate Risk Management",
-        body: "China suppliers update prices when the USD/RMB fluctuates. Always lock in your Alipay rate with your trusted Ghana exchanger before promising prices to retail buyers."
+        body: "China suppliers update prices when USD/RMB fluctuates. Always lock in your Alipay rate with your trusted Ghana exchanger before promising prices to retail buyers."
       },
       {
         category: "Shipping & Clearing",
@@ -445,7 +442,6 @@
     const outTotalRevenue = document.getElementById('outTotalRevenue');
     const outBreakEvenUnit = document.getElementById('outBreakEvenUnit');
     const profitBadge = document.getElementById('profitBadge');
-    const profitHighlightBox = document.getElementById('profitHighlightBox');
 
     // Action Buttons
     const clearFormBtn = document.getElementById('clearFormBtn');
@@ -515,7 +511,7 @@
           if (e.target.value === 'air') {
             weightVolLabel.textContent = 'Total Weight (kg)';
             freightRateLabel.textContent = 'Freight Rate ($/kg)';
-            if (freightRateUsdInput.value == '300') freightRateUsdInput.value = '12.00';
+            if (freightRateUsdInput.value == '280') freightRateUsdInput.value = '12.00';
           } else {
             weightVolLabel.textContent = 'Total Volume (CBM)';
             freightRateLabel.textContent = 'Sea Freight Rate ($/CBM)';
@@ -562,7 +558,6 @@
       // Fetch Rates
       const usdToGhs = parseFloat(usdToGhsInput.value) || 0;
       const rmbToGhs = parseFloat(rmbToGhsInput.value) || 0;
-      const usdToRmb = rmbToGhs > 0 ? (usdToGhs / rmbToGhs) : 7.2;
 
       // Fetch Form Inputs
       const qty = parseFloat(itemQuantityInput.value) || 0;
@@ -777,7 +772,6 @@
 
 Calculated using *Ghana Import Calculator* 🇬🇭`;
 
-      // Copy method
       const tempInput = document.createElement('textarea');
       tempInput.value = summaryText;
       document.body.appendChild(tempInput);
