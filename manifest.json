@@ -1,0 +1,16 @@
+{
+  "name": "Ghana Import Calculator",
+  "short_name": "ImportCalc",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#006b3f",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/512/cargo-ship.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
