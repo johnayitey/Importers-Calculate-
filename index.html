@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ghana Import Calculator - Landed Cost, Margins & Profit</title>
+  <style>
+    :root {
+      --primary: #006b3f;
+      --primary-dark: #004d2d;
+      --accent: #ce1126;
+      --gold: #fcd116;
+      --bg: #f4f6f8;
+      --card-bg: #ffffff;
+      --text: #1a1a1a;
+      --border: #e2e8f0;
+      --muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px 12px 32px 12px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 8px 0 4px 0;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .flag-bar {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, #ce1126 33.3%, #fcd116 33.3%, #fcd116 66.6%, #006b3f 66.6%);
+      border-radius: 2px;
+    }
+
+    /* Dynamic Advertisement Block */
+    .ad-container {
+      background: #fffdf0;
+      border: 1px solid #fce788;
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .ad-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .ad-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .ad-content h3 {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .ad-content p {
+      font-size: 12px;
+      color: #555;
+    }
+
+    .ad-button {
+      background-color: #d97706;
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .ad-button:hover {
+      background-color: #b45309;
+    }
+
+    /* Card Standard Styling */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .input-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .input-field, select.input-field {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+
+    .input-field:focus, select.input-field:focus {
+      border-color: var(--primary);
+    }
+
+    .unit-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .unit-toggle button {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border: none;
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .unit-toggle button.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Results Summary Card Styling */
+    .results-card {
+      background: #003820;
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 20px 16px;
+      box-shadow: 0 6px 16px rgba(0, 107, 63, 0.2);
+    }
+
+    .results-card .card-title {
+      color: #ffffff;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 10px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 13.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .result-row:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      color: #cbd5e1;
+    }
+
+    .result-val {
+      font-weight: 600;
+      font-size: 14.5px;
+    }
+
+    .highlight-row {
+      background: rgba(252, 209, 22, 0.12);
+      margin: 8px -16px;
+      padding: 12px 16px;
+      border-left: 4px solid var(--gold);
+    }
+
+    .highlight-row .result-label {
+      color: #fef08a;
+      font-weight: 700;
+    }
+
+    .highlight-row .result-val {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .profit-positive {
+      color: #4ade80 !important;
+    }
+
+    .profit-negative {
+      color: #f87171 !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>📦 Ghana Import Calculator</h1>
+    <p>Calculate landed cost, margins & profit for 1688, Alibaba & Taobao</p>
+  </div>
+
+  <div class="flag-bar"></div>
+
+  <!-- Dynamic Ad Section (Loads from ad.json) -->
+  <div class="ad-container" id="ad-container" style="display: none;">
+    <span class="ad-label">ADVERTISEMENT</span>
+    <div class="ad-body">
+      <div class="ad-content">
+        <h3 id="ad-title"></h3>
+        <p id="ad-desc"></p>
+      </div>
+      <a id="ad-link" href="#" target="_blank" rel="noopener noreferrer" class="ad-button">Learn More</a>
+    </div>
+  </div>
+
+  <!-- Exchange Rates Card -->
+  <div class="card">
+    <div class="card-title">
+      <span>💹 Exchange Rates</span>
+      <button class="reset-btn" onclick="resetRates()">Reset Rates</button>
+    </div>
+    <div class="grid-2">
+      <div class="input-group">
+        <label>1 USD ($) to GHS (GH₵)</label>
+        <input type="number" id="usd-rate" class="input-field" value="15.50" step="0.01" oninput="calculateLandedCost()" />
+      </div>
+      <div class="input-group">
+        <label>1 CNY (¥) to GHS (GH₵)</label>
+        <input type="number" id="cny-rate" class="input-field" value="2.15" step="0.01" oninput="calculateLandedCost()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Costs Card -->
+  <div class="card">
+    <div class="card-title">
+      <span>📦 Product Details</span>
+      <button class="reset-btn" style="color: var(--accent);" onclick="clearForm()">Clear</button>
+    </div>
+
+    <div class="input-group">
+      <label>Product Name / Description</label>
+      <input type="text" id="prod-name" class="input-field" placeholder="e.g. Night wear" />
+    </div>
+
+    <div class="grid-2">
+      <div class="input-group">
+        <label>Total Quantity (Units) *</label>
+        <input type="number" id="prod-qty" class="input-field" value="20" oninput="calculateLandedCost()" />
+      </div>
+
+      <div class="input-group">
+        <label>Currency</label>
+        <select id="cost-currency" class="input-field" onchange="calculateLandedCost()">
+          <option value="CNY" selected>¥ CNY</option>
+          <option value="USD">$ USD</option>
+          <option value="GHS">GH₵ GHS</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Cost Price per Unit *</label>
+      <input type="number" id="prod-cost" class="input-field" value="20" step="0.01" oninput="calculateLandedCost()" />
+    </div>
+  </div>
+
+  <!-- Shipping & Logistics Card -->
+  <div class="card">
+    <div class="card-title">
+      <span>🚢 Shipping & Logistics</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="input-group">
+        <label>Shipping Method</label>
+        <select id="ship-method" class="input-field" onchange="calculateLandedCost()">
+          <option value="AIR">Air Freight (per Kg)</option>
+          <option value="SEA">Sea Freight (per CBM)</option>
+          <option value="FLAT">Flat Fee (Total)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label id="ship-qty-label">Total Weight (Kg)</label>
+        <input type="number" id="ship-qty" class="input-field" value="2.5" step="0.1" oninput="calculateLandedCost()" />
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="input-group">
+        <label id="ship-rate-label">Shipping Rate ($/Kg)</label>
+        <input type="number" id="ship-rate" class="input-field" value="12" step="0.1" oninput="calculateLandedCost()" />
+      </div>
+      <div class="input-group">
+        <label>Local Clearing (GH₵)</label>
+        <input type="number" id="clearing-fee" class="input-field" value="50" step="1" oninput="calculateLandedCost()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing & Margin Target Card -->
+  <div class="card">
+    <div class="card-title">
+      <span>💰 Selling Price & Margin</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="input-group">
+        <label>Target Selling Price (GH₵)</label>
+        <input type="number" id="target-price" class="input-field" value="65" step="1" oninput="calculateLandedCost()" />
+      </div>
+      <div class="input-group">
+        <label>Local Delivery / Packaging (GH₵)</label>
+        <input type="number" id="local-extra" class="input-field" value="5" step="1" oninput="calculateLandedCost()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Results Breakdown Card -->
+  <div class="results-card">
+    <div class="card-title">
+      <span>📊 Landed Cost & Profit Breakdown</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Supplier Total:</span>
+      <span class="result-val" id="res-supplier-total">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Shipping & Logistics Total:</span>
+      <span class="result-val" id="res-shipping-total">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Local Clearing & Extras:</span>
+      <span class="result-val" id="res-clearing-total">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Total Batch Landed Cost:</span>
+      <span class="result-val" id="res-total-landed">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row highlight-row">
+      <span class="result-label">Landed Cost / Unit:</span>
+      <span class="result-val" id="res-unit-landed">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Estimated Revenue:</span>
+      <span class="result-val" id="res-total-revenue">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Net Profit / Unit:</span>
+      <span class="result-val" id="res-unit-profit">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Total Batch Profit:</span>
+      <span class="result-val" id="res-total-profit">GH₵ 0.00</span>
+    </div>
+
+    <div class="result-row">
+      <span class="result-label">Profit Margin:</span>
+      <span class="result-val" id="res-profit-margin">0%</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Fetch ad settings dynamically from ad.json
+  fetch('./ad.json?t=' + Date.now())
+    .then(response => {
+      if (!response.ok) throw new Error('No ad config found');
+      return response.json();
+    })
+    .then(ad => {
+      if (ad && ad.active) {
+        document.getElementById('ad-title').textContent = ad.title;
+        document.getElementById('ad-desc').textContent = ad.description;
+        
+        const adLink = document.getElementById('ad-link');
+        adLink.textContent = ad.buttonText || 'Learn More';
+        adLink.href = ad.link;
+        
+        document.getElementById('ad-container').style.display = 'block';
+      }
+    })
+    .catch(err => console.log('Ad fetch status:', err));
+
+  function resetRates() {
+    document.getElementById('usd-rate').value = '15.50';
+    document.getElementById('cny-rate').value = '2.15';
+    calculateLandedCost();
+  }
+
+  function clearForm() {
+    document.getElementById('prod-name').value = '';
+    document.getElementById('prod-qty').value = '';
+    document.getElementById('prod-cost').value = '';
+    document.getElementById('target-price').value = '';
+    calculateLandedCost();
+  }
+
+  function calculateLandedCost() {
+    const usdRate = parseFloat(document.getElementById('usd-rate').value) || 0;
+    const cnyRate = parseFloat(document.getElementById('cny-rate').value) || 0;
+
+    const qty = parseFloat(document.getElementById('prod-qty').value) || 0;
+    const unitCost = parseFloat(document.getElementById('prod-cost').value) || 0;
+    const currency = document.getElementById('cost-currency').value;
+
+    const shipMethod = document.getElementById('ship-method').value;
+    const shipQtyInput = document.getElementById('ship-qty');
+    const shipQtyLabel = document.getElementById('ship-qty-label');
+    const shipRateLabel = document.getElementById('ship-rate-label');
+    const shipRate = parseFloat(document.getElementById('ship-rate').value) || 0;
+    const clearingFee = parseFloat(document.getElementById('clearing-fee').value) || 0;
+
+    const targetPrice = parseFloat(document.getElementById('target-price').value) || 0;
+    const localExtra = parseFloat(document.getElementById('local-extra').value) || 0;
+
+    // Dynamic shipping input labels based on mode selection
+    if (shipMethod === 'AIR') {
+      shipQtyLabel.textContent = 'Total Weight (Kg)';
+      shipRateLabel.textContent = 'Shipping Rate ($/Kg)';
+    } else if (shipMethod === 'SEA') {
+      shipQtyLabel.textContent = 'Total Volume (CBM)';
+      shipRateLabel.textContent = 'Shipping Rate ($/CBM)';
+    } else {
+      shipQtyLabel.textContent = 'Flat Fee Cargo';
+      shipRateLabel.textContent = 'Total Freight ($)';
+    }
+
+    const shipQty = parseFloat(shipQtyInput.value) || 0;
+
+    // Convert Supplier Cost to GHS
+    let costInGhsPerUnit = unitCost;
+    if (currency === 'CNY') {
+      costInGhsPerUnit = unitCost * cnyRate;
+    } else if (currency === 'USD') {
+      costInGhsPerUnit = unitCost * usdRate;
+    }
+
+    const totalSupplierGhs = costInGhsPerUnit * qty;
+
+    // Shipping Cost Calculation (In USD converted to GHS)
+    let totalShippingUsd = 0;
+    if (shipMethod === 'FLAT') {
+      totalShippingUsd = shipRate;
+    } else {
+      totalShippingUsd = shipQty * shipRate;
+    }
+    const totalShippingGhs = totalShippingUsd * usdRate;
+
+    // Clearing & Extras Total in GHS
+    const totalClearingGhs = clearingFee + (localExtra * qty);
+
+    // Total Landed Calculations
+    const totalLandedGhs = totalSupplierGhs + totalShippingGhs + totalClearingGhs;
+    const unitLandedGhs = qty > 0 ? (totalLandedGhs / qty) : 0;
+
+    // Revenue & Profit Calculations
+    const totalRevenueGhs = targetPrice * qty;
+    const totalProfitGhs = totalRevenueGhs - totalLandedGhs;
+    const unitProfitGhs = qty > 0 ? (totalProfitGhs / qty) : 0;
+    const marginPct = totalRevenueGhs > 0 ? ((totalProfitGhs / totalRevenueGhs) * 100) : 0;
+
+    // Render Results
+    document.getElementById('res-supplier-total').textContent = `GH₵ ${totalSupplierGhs.toFixed(2)}`;
+    document.getElementById('res-shipping-total').textContent = `GH₵ ${totalShippingGhs.toFixed(2)} ($${totalShippingUsd.toFixed(2)})`;
+    document.getElementById('res-clearing-total').textContent = `GH₵ ${totalClearingGhs.toFixed(2)}`;
+    document.getElementById('res-total-landed').textContent = `GH₵ ${totalLandedGhs.toFixed(2)}`;
+    document.getElementById('res-unit-landed').textContent = `GH₵ ${unitLandedGhs.toFixed(2)}`;
+    
+    document.getElementById('res-total-revenue').textContent = `GH₵ ${totalRevenueGhs.toFixed(2)}`;
+    
+    const resUnitProfit = document.getElementById('res-unit-profit');
+    const resTotalProfit = document.getElementById('res-total-profit');
+    const resMargin = document.getElementById('res-profit-margin');
+
+    resUnitProfit.textContent = `GH₵ ${unitProfitGhs.toFixed(2)}`;
+    resTotalProfit.textContent = `GH₵ ${totalProfitGhs.toFixed(2)}`;
+    resMargin.textContent = `${marginPct.toFixed(1)}%`;
+
+    // Apply color styling based on profitability
+    if (totalProfitGhs >= 0) {
+      resUnitProfit.className = 'result-val profit-positive';
+      resTotalProfit.className = 'result-val profit-positive';
+      resMargin.className = 'result-val profit-positive';
+    } else {
+      resUnitProfit.className = 'result-val profit-negative';
+      resTotalProfit.className = 'result-val profit-negative';
+      resMargin.className = 'result-val profit-negative';
+    }
+  }
+
+  // Initial Calculation Run on Load
+  calculateLandedCost();
+</script>
+
+</body>
+</html>
